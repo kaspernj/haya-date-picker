@@ -1,6 +1,7 @@
 import "./style"
 import classNames from "classnames"
 import {digs} from "diggerize"
+import moment from "moment"
 import PropTypes from "prop-types"
 import React from "react"
 
@@ -22,25 +23,45 @@ class WeekRow extends React.PureComponent {
 
 export default class HayaDatePicker extends React.PureComponent {
   static defaultProps = {
-    activeWeek: undefined,
-    currentDate: new Date(),
+    activeDates: undefined,
+    defaultCurrentDate: new Date(),
     onSelectWeek: undefined,
     pickWeek: false
   }
 
   static propTypes = {
-    activeWeek: PropTypes.number,
+    activeDates: PropTypes.arrayOf(Date),
     className: PropTypes.string,
-    currentDate: PropTypes.instanceOf(Date).isRequired,
+    defaultCurrentDate: PropTypes.instanceOf(Date).isRequired,
     onSelectWeek: PropTypes.func,
     pickWeek: PropTypes.bool.isRequired
   }
 
+  state = {
+    currentDate: this.props.defaultCurrentDate
+  }
+
   render() {
-    const {activeWeek, className, currentDate, onSelectWeek, pickWeek, ...restProps} = this.props
+    const {activeDates, className, defaultCurrentDate, onSelectWeek, pickWeek, ...restProps} = this.props
+    const {currentDate} = digs(this.state, "currentDate")
 
     return (
       <div className={classNames("haya-date-picker", className)} {...restProps}>
+        <div style={{display: "flex", width: "100%", justifyContent: "space-between"}}>
+          <div style={{paddingLeft: "20px"}}>
+            <a href="#" onClick={digg(this, "onPreviousMonthClicked")}>
+              <i className="fa fa-chevron-left" />
+            </a>
+          </div>
+          <div>
+            {currentDate.toLocaleString(I18n.locale, {month: "long"})} {currentDate.getFullYear()}
+          </div>
+          <div style={{paddingRight: "20px"}}>
+            <a href="#" onClick={digg(this, "onNextMonthClicked")}>
+              <i className="fa fa-chevron-right" />
+            </a>
+          </div>
+        </div>
         <table className="date-picker-table" data-pick-week={pickWeek}>
           <thead>
             <tr className="day-headers">
@@ -54,7 +75,7 @@ export default class HayaDatePicker extends React.PureComponent {
           </thead>
           <tbody>
             {this.weeksInMonth().map(({date, daysInWeek, weekNumber}) =>
-              <WeekRow data-active-week={weekNumber == activeWeek} key={`week-${weekNumber}`} onClick={digg(this, "onSelectWeek")} weekDate={date} weekNumber={weekNumber}>
+              <WeekRow data-active-week={this.isWeekActive(date)} key={`week-${weekNumber}`} onClick={digg(this, "onSelectWeek")} weekDate={date} weekNumber={weekNumber}>
                 <td>
                   {weekNumber}
                 </td>
@@ -74,6 +95,50 @@ export default class HayaDatePicker extends React.PureComponent {
     )
   }
 
+  currentWeekNumber = () => this.weekNumberForDate(digg(this, "state", "currentDate"))
+  isWeekActive = (date) => {
+    const {activeDates, pickWeek} = digs(this.props, "activeDates", "pickWeek")
+    const dateWeekNumber = this.weekNumberForDate(date)
+
+    if (!pickWeek) return false
+
+    for (const activeDate of activeDates) {
+      if (date.getFullYear() == activeDate.getFullYear() && this.weekNumberForDate(activeDate) == dateWeekNumber) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  onNextMonthClicked = (e) => {
+    e.preventDefault()
+
+    const {currentDate} = digs(this.state, "currentDate")
+    let nextYear = currentDate.getFullYear()
+    let nextMonth
+
+    if (currentDate.getMonth() >= 11) {
+      nextYear += 1
+      nextMonth = 0
+    } else {
+      nextMonth = currentDate.getMonth() + 1
+    }
+
+    const newCurrentDate = new Date(nextYear, nextMonth, 10)
+
+    this.setState({currentDate: newCurrentDate})
+  }
+
+  onPreviousMonthClicked = (e) => {
+    e.preventDefault()
+
+    const {currentDate} = digs(this.state, "currentDate")
+    const newCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+
+    this.setState({currentDate: newCurrentDate})
+  }
+
   onSelectWeek = ({e, weekDate, weekNumber}) => {
     const {onSelectWeek, pickWeek} = digs(this.props, "onSelectWeek", "pickWeek")
 
@@ -85,7 +150,7 @@ export default class HayaDatePicker extends React.PureComponent {
   }
 
   weekDays() {
-    const {currentDate} = digs(this.props, "currentDate")
+    const {currentDate} = digs(this.state, "currentDate")
     const firstDayOfWeek = this.firstDayOfWeek()
     const daysInLastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate() + 1
     const result = []
@@ -103,7 +168,7 @@ export default class HayaDatePicker extends React.PureComponent {
   }
 
   daysUntilFirstDayOfWeek = () => {
-    const {currentDate} = digs(this.props, "currentDate")
+    const {currentDate} = digs(this.state, "currentDate")
     const firstDayOfWeek = this.firstDayOfWeek()
     const daysInLastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate() + 1
     const result = []
@@ -121,7 +186,7 @@ export default class HayaDatePicker extends React.PureComponent {
   }
 
   daysInFirstWeek() {
-    const {currentDate} = digs(this.props, "currentDate")
+    const {currentDate} = digs(this.state, "currentDate")
     const firstDay = this.firstDay()
     const firstDayOfWeek = this.firstDayOfWeek()
     const result = []
@@ -138,32 +203,18 @@ export default class HayaDatePicker extends React.PureComponent {
     return result
   }
 
-  firstDay = () => new Date(this.props.currentDate.getFullYear(), this.props.currentDate.getMonth(), 1)
+  firstDay = () => new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth(), 1)
   firstDayOfWeek = () => this.firstDay().getDay()
-  lastDay = () => new Date(this.props.currentDate.getFullYear(), this.props.currentDate.getMonth() + 1, 0)
-
-  weekNumberForDate = (date) => {
-    let dayCount = 1
-    let dateCount = new Date(date.getFullYear(), 0, dayCount)
-
-    while (dateCount < date) {
-      dayCount += 7
-      dateCount = new Date(date.getFullYear(), 0, dayCount)
-    }
-
-    return Math.floor(dayCount / 7)
-  }
-
-  currentWeekNumber = () => this.weekNumberForDate(digg(this, "props", "currentDate"))
+  lastDay = () => new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth() + 1, 0)
+  weekNumberForDate = (date) => moment(date).week()
 
   weeksInMonth = () => {
-    const {currentDate} = digs(this.props, "currentDate")
+    const {currentDate} = digs(this.state, "currentDate")
     const weeks = []
     let dayCount = 1
     let dateCount = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayCount)
 
-
-    while (dateCount.getMonth() < currentDate.getMonth() + 1) {
+    while (dateCount.getMonth() == currentDate.getMonth()) {
       const weekNumber = this.weekNumberForDate(dateCount)
       const daysInWeek = []
       const startWeekDay = (weekNumber - 1) * 7 + 1
