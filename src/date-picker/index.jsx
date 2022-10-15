@@ -100,7 +100,7 @@ export default class HayaDatePicker extends React.PureComponent {
     const {activeDates, pickWeek} = digs(this.props, "activeDates", "pickWeek")
     const dateWeekNumber = this.weekNumberForDate(date)
 
-    if (!pickWeek) return false
+    if (!pickWeek || !activeDates) return false
 
     for (const activeDate of activeDates) {
       if (date.getFullYear() == activeDate.getFullYear() && this.weekNumberForDate(activeDate) == dateWeekNumber) {
@@ -167,46 +167,10 @@ export default class HayaDatePicker extends React.PureComponent {
     return result
   }
 
-  daysUntilFirstDayOfWeek = () => {
-    const {currentDate} = digs(this.state, "currentDate")
-    const firstDayOfWeek = this.firstDayOfWeek()
-    const daysInLastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate() + 1
-    const result = []
-
-    for (let i = 0; i < this.firstDayOfWeek() - 1; i++) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, daysInLastMonth - firstDayOfWeek + i + 1)
-
-      result.push({
-        dayNumber: i,
-        date
-      })
-    }
-
-    return result
-  }
-
-  daysInFirstWeek() {
-    const {currentDate} = digs(this.state, "currentDate")
-    const firstDay = this.firstDay()
-    const firstDayOfWeek = this.firstDayOfWeek()
-    const result = []
-
-    for (let i = this.firstDayOfWeek(); i <= 7; i++) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstDay.getDate() - firstDayOfWeek + i)
-
-      result.push({
-        dayNumber: i,
-        date
-      })
-    }
-
-    return result
-  }
-
   firstDay = () => new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth(), 1)
   firstDayOfWeek = () => this.firstDay().getDay()
   lastDay = () => new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth() + 1, 0)
-  weekNumberForDate = (date) => moment(date).week()
+  weekNumberForDate = (date) => moment(date).isoWeek()
 
   weeksInMonth = () => {
     const {currentDate} = digs(this.state, "currentDate")
