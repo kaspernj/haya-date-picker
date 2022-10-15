@@ -1,0 +1,44 @@
+.haya-date-picker {
+  display: inline-block;
+  background: #fff;
+  border-radius: 7px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+
+  .date-picker-table {
+    border-spacing: 0px;
+    border-collapse: separate;
+
+    td,
+    th {
+      padding: 4px;
+    }
+
+    td:first-child,
+    th:first-child {
+      padding-left: 20px;
+    }
+
+    td:last-child,
+    th:last-child {
+      padding-right: 20px;
+    }
+
+    &[data-pick-week="true"] .week-row[data-active-week="false"]:hover {
+      background: #f1f3f4;
+    }
+
+    &[data-pick-week="true"] .week-row:hover {
+      cursor: pointer;
+    }
+
+    .week-row[data-active-week="true"] {
+      background: #039be5;
+      color: #fff;
+    }
+  }
+
+  .day-of-previous-month {
+    color: grey;
+  }
+}

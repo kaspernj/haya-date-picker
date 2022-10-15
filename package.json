@@ -1,0 +1,19 @@
+{
+  "name": "haya-date-picker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaspernj/haya-date-picker.git"
+  },
+  "author": "k@spernj.org",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kaspernj/haya-date-picker/issues"
+  },
+  "homepage": "https://github.com/kaspernj/haya-date-picker#readme"
+}
