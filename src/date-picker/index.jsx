@@ -75,7 +75,14 @@ export default class HayaDatePicker extends React.PureComponent {
           </thead>
           <tbody>
             {this.weeksInMonth().map(({date, daysInWeek, weekNumber}) =>
-              <WeekRow data-active-week={this.isWeekActive(date)} key={`week-${weekNumber}`} onClick={digg(this, "onSelectWeek")} weekDate={date} weekNumber={weekNumber}>
+              <WeekRow
+                data-active-week={this.isWeekActive(date)}
+                data-week-number={weekNumber}
+                key={`week-${weekNumber}`}
+                onClick={digg(this, "onSelectWeek")}
+                weekDate={date}
+                weekNumber={weekNumber}
+              >
                 <td>
                   {weekNumber}
                 </td>
