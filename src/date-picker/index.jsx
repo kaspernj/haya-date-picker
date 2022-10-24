@@ -34,7 +34,8 @@ export default class HayaDatePicker extends React.PureComponent {
     className: PropTypes.string,
     defaultCurrentDate: PropTypes.instanceOf(Date).isRequired,
     onSelectWeek: PropTypes.func,
-    pickWeek: PropTypes.bool.isRequired
+    pickWeek: PropTypes.bool.isRequired,
+    weeksAvailable: PropTypes.object
   }
 
   state = {
@@ -42,7 +43,7 @@ export default class HayaDatePicker extends React.PureComponent {
   }
 
   render() {
-    const {activeDates, className, defaultCurrentDate, onSelectWeek, pickWeek, ...restProps} = this.props
+    const {activeDates, className, defaultCurrentDate, onSelectWeek, pickWeek, weeksAvailable, ...restProps} = this.props
     const {currentDate} = digs(this.state, "currentDate")
 
     return (
@@ -77,13 +78,14 @@ export default class HayaDatePicker extends React.PureComponent {
             {this.weeksInMonth().map(({date, daysInWeek, weekNumber}) =>
               <WeekRow
                 data-active-week={this.isWeekActive(date)}
+                data-week-available={this.isWeekAvailable(date)}
                 data-week-number={weekNumber}
                 key={`week-${weekNumber}`}
                 onClick={digg(this, "onSelectWeek")}
                 weekDate={date}
                 weekNumber={weekNumber}
               >
-                <td>
+                <td className="week-number">
                   {weekNumber}
                 </td>
                 {daysInWeek.map(({date, dayNumber}) =>
@@ -103,7 +105,7 @@ export default class HayaDatePicker extends React.PureComponent {
   }
 
   currentWeekNumber = () => this.weekNumberForDate(digg(this, "state", "currentDate"))
-  isWeekActive = (date) => {
+  isWeekActive(date) {
     const {activeDates, pickWeek} = digs(this.props, "activeDates", "pickWeek")
     const dateWeekNumber = this.weekNumberForDate(date)
 
@@ -116,6 +118,17 @@ export default class HayaDatePicker extends React.PureComponent {
     }
 
     return false
+  }
+
+  isWeekAvailable(date) {
+    const {weeksAvailable} = this.props
+
+    if (!weeksAvailable) return true
+
+    const year = date.getFullYear()
+    const week = moment(date).isoWeek()
+
+    return Boolean(year in weeksAvailable && week in weeksAvailable[year])
   }
 
   onNextMonthClicked = (e) => {
@@ -150,6 +163,7 @@ export default class HayaDatePicker extends React.PureComponent {
     const {onSelectWeek, pickWeek} = digs(this.props, "onSelectWeek", "pickWeek")
 
     if (!pickWeek || !onSelectWeek) return
+    if (!this.isWeekAvailable(weekDate)) return
 
     e.preventDefault()
 

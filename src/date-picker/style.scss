@@ -29,12 +29,26 @@
     }
 
     &[data-pick-week="true"] .week-row:hover {
-      cursor: pointer;
+      &[data-week-available="true"] {
+        cursor: pointer;
+      }
+
+      &[data-week-available="false"] {
+        cursor: not-allowed;
+      }
+    }
+
+    .week-number {
+      font-weight: bold;
     }
 
     .week-row[data-active-week="true"] {
       background: #039be5;
       color: #fff;
+    }
+
+    .week-row[data-week-available="false"] .week-number {
+      color: grey;
     }
   }
 
