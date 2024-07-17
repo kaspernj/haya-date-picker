@@ -1,27 +1,28 @@
 import "./style"
 import classNames from "classnames"
-import {digs} from "diggerize"
 import moment from "moment"
 import PropTypes from "prop-types"
-import React from "react"
+import {memo, useMemo} from "react"
+import {ShapeComponent} from "set-state-compare/src/shape-component"
+import {Pressable, Text, View} from "react-native"
 
-class WeekRow extends React.PureComponent {
+const WeekRow = memo(shapeComponent(class WeekRow extends ShapeComponent {
   render() {
     const {onClick, weekDate, weekNumber, ...restProps} = this.props
 
     return (
-      <tr className="week-row" onClick={digg(this, "onSelectWeek")} {...restProps} />
+      <tr className="week-row" onClick={this.tt.onSelectWeek} {...restProps} />
     )
   }
 
   onSelectWeek = (e) => {
-    const {weekDate, weekNumber} = digs(this.props, "weekDate", "weekNumber")
+    const {weekDate, weekNumber} = this.p
 
     this.props.onClick({e, weekDate, weekNumber})
   }
-}
+}))
 
-export default class HayaDatePicker extends React.PureComponent {
+export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   static defaultProps = {
     activeDates: undefined,
     defaultCurrentDate: new Date(),
@@ -38,31 +39,49 @@ export default class HayaDatePicker extends React.PureComponent {
     weeksAvailable: PropTypes.object
   }
 
-  state = {
-    currentDate: this.props.defaultCurrentDate
+  setup() {
+    this.useStates({
+      currentDate: this.props.defaultCurrentDate
+    })
+
+    this.weeksInMonth = useMemo(() => this.getWeeksInMonth(), [this.s.currentDate])
   }
 
   render() {
     const {activeDates, className, defaultCurrentDate, onSelectWeek, pickWeek, weeksAvailable, ...restProps} = this.props
-    const {currentDate} = digs(this.state, "currentDate")
+    const {currentDate} = this.s
 
     return (
-      <div className={classNames("haya-date-picker", className)} {...restProps}>
-        <div style={{display: "flex", width: "100%", justifyContent: "space-between"}}>
-          <div style={{paddingLeft: "20px"}}>
-            <a href="#" onClick={digg(this, "onPreviousMonthClicked")}>
-              <i className="fa fa-chevron-left" />
-            </a>
-          </div>
-          <div>
+      <View
+        dataSet={{component: "haya-date-picker", class: className}}
+        style={{
+          display: "inline-block",
+          backgroundColor: "#fff",
+          borderRadius: 7,
+          paddingTop: 16,
+          paddingBottom: 16
+        }}
+        {...restProps}
+      >
+        <View style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}}>
+          <View style={{paddingLeft: "20px"}}>
+            <Pressable onPress={this.tt.onPreviousMonthClicked}>
+              <Text style={{marginTop: -8, fontSize: 27}}>
+                &lsaquo;
+              </Text>
+            </Pressable>
+          </View>
+          <View>
             {currentDate.toLocaleString(I18n.locale, {month: "long"})} {currentDate.getFullYear()}
-          </div>
-          <div style={{paddingRight: "20px"}}>
-            <a href="#" onClick={digg(this, "onNextMonthClicked")}>
-              <i className="fa fa-chevron-right" />
-            </a>
-          </div>
-        </div>
+          </View>
+          <View style={{paddingRight: "20px"}}>
+            <Pressable onPress={this.tt.onNextMonthClicked}>
+              <Text style={{marginTop: -8, fontSize: 27}}>
+                &rsaquo;
+              </Text>
+            </Pressable>
+          </View>
+        </View>
         <table className="date-picker-table" data-pick-week={pickWeek}>
           <thead>
             <tr className="day-headers">
@@ -75,13 +94,13 @@ export default class HayaDatePicker extends React.PureComponent {
             </tr>
           </thead>
           <tbody>
-            {this.weeksInMonth().map(({date, daysInWeek, weekNumber}) =>
+            {this.weeksInMonth.map(({date, daysInWeek, weekNumber}) =>
               <WeekRow
                 data-active-week={this.isWeekActive(date)}
                 data-week-available={this.isWeekAvailable(date)}
                 data-week-number={weekNumber}
                 key={`week-${weekNumber}`}
-                onClick={digg(this, "onSelectWeek")}
+                onClick={this.tt.onSelectWeek}
                 weekDate={date}
                 weekNumber={weekNumber}
               >
@@ -91,6 +110,7 @@ export default class HayaDatePicker extends React.PureComponent {
                 {daysInWeek.map(({date, dayNumber}) =>
                   <td
                     className={classNames("day-column", {"day-of-previous-month": date.getMonth() != currentDate.getMonth()})}
+                    data-day-number={dayNumber}
                     key={`day-${dayNumber}`}
                   >
                     {date.getDate()}
@@ -100,13 +120,13 @@ export default class HayaDatePicker extends React.PureComponent {
             )}
           </tbody>
         </table>
-      </div>
+      </View>
     )
   }
 
-  currentWeekNumber = () => this.weekNumberForDate(digg(this, "state", "currentDate"))
+  currentWeekNumber = () => this.weekNumberForDate(this.s.currentDate)
   isWeekActive(date) {
-    const {activeDates, pickWeek} = digs(this.props, "activeDates", "pickWeek")
+    const {activeDates, pickWeek} = this.p
     const dateWeekNumber = this.weekNumberForDate(date)
 
     if (!pickWeek || !activeDates) return false
@@ -134,7 +154,7 @@ export default class HayaDatePicker extends React.PureComponent {
   onNextMonthClicked = (e) => {
     e.preventDefault()
 
-    const {currentDate} = digs(this.state, "currentDate")
+    const {currentDate} = this.s
     let nextYear = currentDate.getFullYear()
     let nextMonth
 
@@ -153,14 +173,14 @@ export default class HayaDatePicker extends React.PureComponent {
   onPreviousMonthClicked = (e) => {
     e.preventDefault()
 
-    const {currentDate} = digs(this.state, "currentDate")
+    const {currentDate} = this.s
     const newCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
 
     this.setState({currentDate: newCurrentDate})
   }
 
   onSelectWeek = ({e, weekDate, weekNumber}) => {
-    const {onSelectWeek, pickWeek} = digs(this.props, "onSelectWeek", "pickWeek")
+    const {onSelectWeek, pickWeek} = this.p
 
     if (!pickWeek || !onSelectWeek) return
     if (!this.isWeekAvailable(weekDate)) return
@@ -171,7 +191,7 @@ export default class HayaDatePicker extends React.PureComponent {
   }
 
   weekDays() {
-    const {currentDate} = digs(this.state, "currentDate")
+    const {currentDate} = this.s
     const firstDayOfWeek = this.firstDayOfWeek()
     const daysInLastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate() + 1
     const result = []
@@ -190,23 +210,22 @@ export default class HayaDatePicker extends React.PureComponent {
 
   firstDay = () => new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth(), 1)
   firstDayOfWeek = () => this.firstDay().getDay()
-  lastDay = () => new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth() + 1, 0)
   weekNumberForDate = (date) => moment(date).isoWeek()
 
-  weeksInMonth = () => {
-    const {currentDate} = digs(this.state, "currentDate")
+  getWeeksInMonth = () => {
+    const {currentDate} = this.s
     const weeks = []
     let dayCount = 1
-    let dateCount = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayCount)
+    let dateCount = moment(currentDate).startOf("month").weekday(1).toDate()
 
-    while (dateCount.getMonth() == currentDate.getMonth()) {
+    while (dateCount.getMonth() <= currentDate.getMonth()) {
       const weekNumber = this.weekNumberForDate(dateCount)
       const daysInWeek = []
       const startWeekDay = (weekNumber - 1) * 7 + 1
 
       for (let i = 0; i < 7; i++) {
         const weekDayInYear = startWeekDay + i
-        const weekDate = new Date(currentDate.getFullYear(), 0, weekDayInYear + 2)
+        const weekDate = new Date(currentDate.getFullYear(), 0, weekDayInYear)
 
         daysInWeek.push({
           date: weekDate,
@@ -226,4 +245,4 @@ export default class HayaDatePicker extends React.PureComponent {
 
     return weeks
   }
-}
+}))
