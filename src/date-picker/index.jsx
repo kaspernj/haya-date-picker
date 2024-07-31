@@ -72,7 +72,9 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
             </Pressable>
           </View>
           <View>
-            {currentDate.toLocaleString(I18n.locale, {month: "long"})} {currentDate.getFullYear()}
+            <Text>
+              {currentDate.toLocaleString(I18n.locale, {month: "long"})} {currentDate.getFullYear()}
+            </Text>
           </View>
           <View style={{paddingRight: "20px"}}>
             <Pressable onPress={this.tt.onNextMonthClicked}>
