@@ -1,6 +1,4 @@
-import "./style"
 import {Column, HeadColumn, Row, Table, Tbody, Thead} from "../table"
-import classNames from "classnames"
 import moment from "moment"
 import PropTypes from "prop-types"
 import {memo, useMemo} from "react"
@@ -95,19 +93,16 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
           <Tbody>
             {this.weeksInMonth.map(({date, daysInWeek, weekNumber}) =>
               <WeekRow
-                dataSet={{
-                  activeWeek: this.isWeekActive(date),
-                  weekNumber: weekNumber
-                }}
                 key={`week-${weekNumber}`}
                 onClick={this.tt.onSelectWeek}
                 pickWeek={pickWeek}
+                weekActive={this.isWeekActive(date)}
                 weekAvailable={this.isWeekAvailable(date)}
                 weekDate={date}
                 weekNumber={weekNumber}
               >
                 <Column dataSet={{class: "week-number"}} style={{paddingLeft: 20}}>
-                  <Text style={{fontWeight: "bold"}}>
+                  <Text style={{color: this.isWeekActive(date) ? "#fff" : undefined, fontWeight: "bold"}}>
                     {weekNumber}
                   </Text>
                 </Column>
@@ -127,7 +122,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                   >
                     <Text
                       style={{
-                        color: date.getMonth() == currentDate.getMonth() ? undefined : "grey",
+                        color: this.isWeekActive(date) ? "#fff" : date.getMonth() == currentDate.getMonth() ? undefined : "grey",
                         textAlign: "center"
                       }}
                     >
