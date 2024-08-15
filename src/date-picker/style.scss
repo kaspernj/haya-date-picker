@@ -1,41 +1,5 @@
 [data-component="haya-date-picker"] {
-  .date-picker-table {
-    border-spacing: 0px;
-    border-collapse: separate;
-
-    td,
-    th {
-      padding: 4px;
-    }
-
-    td:first-child,
-    th:first-child {
-      padding-left: 20px;
-    }
-
-    td:last-child,
-    th:last-child {
-      padding-right: 20px;
-    }
-
-    &[data-pick-week="true"] .week-row[data-active-week="false"]:hover {
-      background: #f1f3f4;
-    }
-
-    &[data-pick-week="true"] .week-row:hover {
-      &[data-week-available="true"] {
-        cursor: pointer;
-      }
-
-      &[data-week-available="false"] {
-        cursor: not-allowed;
-      }
-    }
-
-    .week-number {
-      font-weight: bold;
-    }
-
+  [data-class="date-picker-table"] {
     .week-row[data-active-week="true"] {
       background: #039be5;
       color: #fff;
@@ -44,14 +8,5 @@
     .week-row[data-week-available="false"] .week-number {
       color: grey;
     }
-  }
-
-  .day-of-previous-month {
-    color: grey;
-  }
-
-  .day-column,
-  .day-header {
-    text-align: center;
   }
 }

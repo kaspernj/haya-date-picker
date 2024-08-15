@@ -1,26 +1,12 @@
 import "./style"
+import {Column, HeadColumn, Row, Table, Tbody, Thead} from "../table"
 import classNames from "classnames"
 import moment from "moment"
 import PropTypes from "prop-types"
 import {memo, useMemo} from "react"
-import {ShapeComponent} from "set-state-compare/src/shape-component"
+import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
 import {Pressable, Text, View} from "react-native"
-
-const WeekRow = memo(shapeComponent(class WeekRow extends ShapeComponent {
-  render() {
-    const {onClick, weekDate, weekNumber, ...restProps} = this.props
-
-    return (
-      <tr className="week-row" onClick={this.tt.onSelectWeek} {...restProps} />
-    )
-  }
-
-  onSelectWeek = (e) => {
-    const {weekDate, weekNumber} = this.p
-
-    this.props.onClick({e, weekDate, weekNumber})
-  }
-}))
+import WeekRow from "./week-row"
 
 export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   static defaultProps = {
@@ -30,14 +16,15 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     pickWeek: false
   }
 
-  static propTypes = {
+  static propTypes = propTypesExact({
     activeDates: PropTypes.arrayOf(Date),
     className: PropTypes.string,
     defaultCurrentDate: PropTypes.instanceOf(Date).isRequired,
+    mode: PropTypes.string.isRequired,
     onSelectWeek: PropTypes.func,
     pickWeek: PropTypes.bool.isRequired,
     weeksAvailable: PropTypes.object
-  }
+  })
 
   setup() {
     this.useStates({
@@ -48,7 +35,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   render() {
-    const {activeDates, className, defaultCurrentDate, onSelectWeek, pickWeek, weeksAvailable, ...restProps} = this.props
+    const {className, pickWeek} = this.props
     const {currentDate} = this.s
 
     return (
@@ -61,7 +48,6 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
           paddingTop: 16,
           paddingBottom: 16
         }}
-        {...restProps}
       >
         <View style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}}>
           <View style={{paddingLeft: "20px"}}>
@@ -84,54 +70,85 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
             </Pressable>
           </View>
         </View>
-        <table className="date-picker-table" data-pick-week={pickWeek}>
-          <thead>
-            <tr className="day-headers">
-              <td />
-              {this.weekDays().map(({dayNumber, date}) =>
-                <th className="day-header" key={`day-${dayNumber}`}>
-                  {date.toLocaleString(I18n.locale, {weekday: "long"}).substring(0, 1)}
-                </th>
+        <Table dataSet={{class: "date-picker-table", pickWeek: "pickWeek"}}>
+          <Thead>
+            <Row className="day-headers">
+              <HeadColumn style={{paddingLeft: 20}} />
+              {this.weekDays().map(({dayNumber, date, last}) =>
+                <HeadColumn
+                  className="day-header"
+                  key={`day-${dayNumber}`}
+                  style={{
+                    paddingTop: 4,
+                    paddingRight: last ? 20 : 4,
+                    paddingBottom: 4,
+                    paddingLeft: 4
+                  }}
+                >
+                  <Text style={{textAlign: "center"}}>
+                    {date.toLocaleString(I18n.locale, {weekday: "long"}).substring(0, 1)}
+                  </Text>
+                </HeadColumn>
               )}
-            </tr>
-          </thead>
-          <tbody>
+            </Row>
+          </Thead>
+          <Tbody>
             {this.weeksInMonth.map(({date, daysInWeek, weekNumber}) =>
               <WeekRow
-                data-active-week={this.isWeekActive(date)}
-                data-week-available={this.isWeekAvailable(date)}
-                data-week-number={weekNumber}
+                dataSet={{
+                  activeWeek: this.isWeekActive(date),
+                  weekNumber: weekNumber
+                }}
                 key={`week-${weekNumber}`}
                 onClick={this.tt.onSelectWeek}
+                pickWeek={pickWeek}
+                weekAvailable={this.isWeekAvailable(date)}
                 weekDate={date}
                 weekNumber={weekNumber}
               >
-                <td className="week-number">
-                  {weekNumber}
-                </td>
-                {daysInWeek.map(({date, dayNumber}) =>
-                  <td
-                    className={classNames("day-column", {"day-of-previous-month": date.getMonth() != currentDate.getMonth()})}
-                    data-day-number={dayNumber}
+                <Column dataSet={{class: "week-number"}} style={{paddingLeft: 20}}>
+                  <Text style={{fontWeight: "bold"}}>
+                    {weekNumber}
+                  </Text>
+                </Column>
+                {daysInWeek.map(({date, dayNumber, last}) =>
+                  <Column
+                    dataSet={{
+                      class: "day-column",
+                      dayNumber: dayNumber
+                    }}
                     key={`day-${dayNumber}`}
+                    style={{
+                      paddingTop: 4,
+                      paddingRight: last ? 20 : 4,
+                      paddingBottom: 4,
+                      paddingLeft: 4
+                    }}
                   >
-                    {date.getDate()}
-                  </td>
+                    <Text
+                      style={{
+                        color: date.getMonth() == currentDate.getMonth() ? undefined : "grey",
+                        textAlign: "center"
+                      }}
+                    >
+                      {date.getDate()}
+                    </Text>
+                  </Column>
                 )}
               </WeekRow>
             )}
-          </tbody>
-        </table>
+          </Tbody>
+        </Table>
       </View>
     )
   }
 
   currentWeekNumber = () => this.weekNumberForDate(this.s.currentDate)
   isWeekActive(date) {
-    const {activeDates, pickWeek} = this.p
+    const {activeDates, mode, pickWeek} = this.p
     const dateWeekNumber = this.weekNumberForDate(date)
 
-    if (!pickWeek || !activeDates) return false
+    if (!pickWeek || !activeDates || mode != "week") return false
 
     for (const activeDate of activeDates) {
       if (date.getFullYear() == activeDate.getFullYear() && this.weekNumberForDate(activeDate) == dateWeekNumber) {
@@ -203,7 +220,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
       result.push({
         dayNumber: i,
-        date
+        date,
+        last: i == 6
       })
     }
 
@@ -231,7 +249,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
         daysInWeek.push({
           date: weekDate,
-          dayNumber: i
+          dayNumber: i,
+          last: i == 6
         })
       }
 
