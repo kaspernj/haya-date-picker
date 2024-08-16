@@ -8,8 +8,8 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
   static propTypes = propTypesExact({
     children: PropTypes.node,
     dataSet: PropTypes.object,
+    mode: PropTypes.string.isRequired,
     onClick: PropTypes.func,
-    pickWeek: PropTypes.bool.isRequired,
     weekActive: PropTypes.bool.isRequired,
     weekAvailable: PropTypes.bool.isRequired,
     weekDate: PropTypes.instanceOf(Date),
@@ -21,7 +21,7 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
   }
 
   render() {
-    const {dataSet, onClick, pickWeek, weekActive, weekAvailable, weekDate, weekNumber, ...restProps} = this.props
+    const {dataSet, mode, onClick, weekActive, weekAvailable, weekDate, weekNumber, ...restProps} = this.props
     const actualDataSet = Object.assign(
       {
         class: "week-row",
@@ -34,7 +34,7 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
 
     const style = {}
 
-    if (pickWeek) {
+    if (mode == "week") {
       if (weekAvailable) {
         style.cursor = "pointer"
       } else {
@@ -42,7 +42,7 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
       }
     }
 
-    if (pickWeek && this.s.pointerOver) {
+    if (mode == "week" && this.s.pointerOver) {
       style.backgroundColor = "#f1f3f4"
     }
 
