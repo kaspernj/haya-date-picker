@@ -1,8 +1,7 @@
 import {Column} from "../table"
-import moment from "moment"
 import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
-import {memo, useMemo} from "react"
+import {memo} from "react"
 import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
 import {Pressable, Text, View} from "react-native"
 
@@ -11,10 +10,13 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
     currentDate: PropTypes.instanceOf(Date).isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
     dayNumber: PropTypes.number.isRequired,
+    focus: PropTypes.bool.isRequired,
     isWeekActive: PropTypes.bool.isRequired,
     last: PropTypes.bool.isRequired,
     mode: PropTypes.string.isRequired,
-    onPress: PropTypes.func.isRequired
+    onPress: PropTypes.func.isRequired,
+    onPointerEnter: PropTypes.func.isRequired,
+    onPointerLeave: PropTypes.func.isRequired
   })
 
   setup() {
@@ -24,7 +26,7 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
   }
 
   render() {
-    const {currentDate, date, dayNumber, isWeekActive, last, mode} = this.p
+    const {currentDate, date, dayNumber, focus, isWeekActive, last, mode} = this.p
     const {hover} = this.s
     const style = {}
     const viewStyle = {
@@ -54,6 +56,8 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
       if (hover) {
         viewStyle.backgroundColor = "#039be5"
         textStyle.color = "#fff"
+      } else if (focus) {
+        viewStyle.backgroundColor = "#d7e4ea"
       }
     }
 
@@ -71,24 +75,38 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
         }}
         style={style}
       >
-        {mode == "dateRange" &&
-          <Pressable
-            children={textContent}
-            onPointerOver={this.tt.onPointerOver}
-            onPointerLeave={this.tt.onPointerLeave}
-            onPress={this.tt.onPress}
-            style={viewStyle}
-          />
-        }
-        {mode != "dateRange" &&
-          <View children={textContent} style={viewStyle} />
-        }
+        {(() => {
+          if (mode == "dateRange") {
+            return (
+              <Pressable
+                children={textContent}
+                onPointerEnter={this.tt.onPointerEnter}
+                onPointerLeave={this.tt.onPointerLeave}
+                onPress={this.tt.onPress}
+                style={viewStyle}
+              />
+            )
+          } else if (mode != "dateRange") {
+            return (
+              <View children={textContent} style={viewStyle} />
+            )
+          } else {
+            throw new Error(`Unknown mode: ${mode}`)
+          }
+        })()}
       </Column>
     )
   }
 
-  onPointerOver = () => this.setState({hover: true})
-  onPointerLeave = () => this.setState({hover: false})
+  onPointerEnter = () => {
+    this.p.onPointerEnter({date: this.p.date})
+    this.setState({hover: true})
+  }
+
+  onPointerLeave = () => {
+    this.p.onPointerLeave({date: this.p.date})
+    this.setState({hover: false})
+  }
 
   onPress = () => this.p.onPress({date: this.p.date})
 }))

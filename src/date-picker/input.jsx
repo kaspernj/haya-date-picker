@@ -6,7 +6,9 @@ import {ShapeComponent} from "set-state-compare/src/shape-component"
 
 export default memo(shapeComponent(class HayaDatePickerInput extends ShapeComponent {
   static propTypes = propTypesExact({
-    datePickerProps: PropTypes.object.isRequired
+    datePickerProps: PropTypes.object.isRequired,
+    textStyle: PropTypes.object,
+    viewStyle: PropTypes.object
   })
 
   setup() {
@@ -16,19 +18,36 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
   }
 
   render() {
+    const {datePickerProps = {}, styles} = this.props
+    const {dateFrom, dateTo} = datePickerProps
+    const {onSelect, ...restDatePickerProps} = datePickerProps
+    const actualViewStyle = Object.assign(
+      {flexDirection: "row"},
+      styles.view
+    )
+    const actualTextStyle = Object.assign(
+      {marginLeft: 8},
+      styles.text
+    )
+
     return (
       <>
         {this.s.showDatePicker &&
           <Modal onRequestClose={this.tt.onDatePickerModalRequestClose}>
             <View>
-              <DatePicker {...this.props.datePickerProps} />
+              <DatePicker onSelect={this.tt.onDateSelect} {...restDatePickerProps} />
             </View>
           </Modal>
         }
         <Pressable onPress={this.tt.onPressed}>
-          <View>
+          <View style={actualViewStyle}>
             <Text>
-              stub
+              &#x1f4c5;
+            </Text>
+            <Text style={actualTextStyle}>
+              {dateFrom && dateTo &&
+                <>{I18n.strftime("%Y-%m-%d", dateFrom)} - {I18n.strftime("%Y-%m-%d", dateTo)}</>
+              }
             </Text>
           </View>
         </Pressable>
@@ -38,7 +57,12 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
 
   onDatePickerModalRequestClose = () => this.setState({showDatePicker: false})
 
+  onDateSelect = (...args) => {
+    this.setState({showDatePicker: false})
+    this.props.datePickerProps.onSelect(...args)
+  }
+
   onPressed = () => {
-    this.setState({showDatePicker: !this.s.showDatePicker})
+    this.setState({showDatePicker: true})
   }
 }))

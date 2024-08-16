@@ -18,6 +18,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   static propTypes = propTypesExact({
     activeDates: PropTypes.arrayOf(Date),
     className: PropTypes.string,
+    dateFrom: PropTypes.instanceOf(Date),
+    dateTo: PropTypes.instanceOf(Date),
     defaultCurrentDate: PropTypes.instanceOf(Date).isRequired,
     mode: PropTypes.string.isRequired,
     onSelect: PropTypes.func,
@@ -28,9 +30,9 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   setup() {
     this.useStates({
       currentDate: this.props.defaultCurrentDate,
+      hoverDate: null,
       selectedDate: null
     })
-
     this.weeksInMonth = useMemo(() => this.getWeeksInMonth(), [this.s.currentDate])
   }
 
@@ -86,7 +88,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                     paddingLeft: 4
                   }}
                 >
-                  <Text style={{textAlign: "center"}}>
+                  <Text style={{fontWeight: "bold", textAlign: "center"}}>
                     {date.toLocaleString(I18n.locale, {weekday: "long"}).substring(0, 1)}
                   </Text>
                 </HeadColumn>
@@ -114,10 +116,13 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                     currentDate={currentDate}
                     date={date}
                     dayNumber={dayNumber}
+                    focus={this.focusDate(date)}
                     isWeekActive={this.isWeekActive(date)}
                     key={`day-${dayNumber}`}
                     last={last}
                     mode={mode}
+                    onPointerEnter={this.tt.onPointerEnterDate}
+                    onPointerLeave={this.tt.onPointerLeaveDate}
                     onPress={this.tt.onDatePress}
                   />
                 )}
@@ -130,6 +135,23 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   currentWeekNumber = () => this.weekNumberForDate(this.s.currentDate)
+
+  focusDate(date) {
+    const {hoverDate, selectedDate} = this.s
+
+    if (!hoverDate || !selectedDate) {
+      return false
+    }
+
+    if (hoverDate > selectedDate && date >= selectedDate && date <= hoverDate) {
+      return true
+    } else if (hoverDate < selectedDate && date <= selectedDate && date >= hoverDate) {
+      return true
+    }
+
+    return false
+  }
+
   isWeekActive(date) {
     const {activeDates, mode, pickWeek} = this.p
     const dateWeekNumber = this.weekNumberForDate(date)
@@ -197,6 +219,16 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     this.setState({currentDate: newCurrentDate})
   }
 
+  onPointerEnterDate = ({date}) => {
+    this.setState({hoverDate: date})
+  }
+
+  onPointerLeaveDate = ({date}) => {
+    if (this.s.hoverDate == date) {
+      this.setState({hoverDate: null})
+    }
+  }
+
   onPreviousMonthClicked = () => {
     const {currentDate} = this.s
     const newCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
@@ -240,34 +272,37 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
   getWeeksInMonth = () => {
     const {currentDate} = this.s
+    const firstInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
     const weeks = []
-    let dayCount = 1
-    let dateCount = moment(currentDate).startOf("month").weekday(1).toDate()
+    let dateCount = moment(firstInMonth).startOf("month").isoWeekday(1)
+    let endDate = moment(currentDate).endOf("month")
 
-    while (dateCount.getMonth() <= currentDate.getMonth()) {
-      const weekNumber = this.weekNumberForDate(dateCount)
+    if (endDate.isoWeekday() != 7) {
+      endDate = endDate.add(7 - endDate.isoWeekday(), "days")
+    }
+
+    endDate = endDate.toDate()
+
+    while (dateCount.toDate() < endDate) {
+      const weekNumber = dateCount.isoWeek()
       const daysInWeek = []
-      const startWeekDay = (weekNumber - 1) * 7 + 1
 
       for (let i = 0; i < 7; i++) {
-        const weekDayInYear = startWeekDay + i
-        const weekDate = new Date(currentDate.getFullYear(), 0, weekDayInYear)
+        const weekDate = dateCount.toDate()
 
         daysInWeek.push({
           date: weekDate,
           dayNumber: i,
           last: i == 6
         })
+        dateCount.add(1, "day")
       }
 
       weeks.push({
-        date: dateCount,
+        date: dateCount.toDate(),
         daysInWeek,
         weekNumber
       })
-
-      dayCount += 7
-      dateCount = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayCount)
     }
 
     return weeks
