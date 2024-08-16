@@ -1,4 +1,5 @@
 import {Column, HeadColumn, Row, Table, Tbody, Thead} from "../table"
+import DateColumn from "./date-column"
 import moment from "moment"
 import PropTypes from "prop-types"
 import {memo, useMemo} from "react"
@@ -10,7 +11,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   static defaultProps = {
     activeDates: undefined,
     defaultCurrentDate: new Date(),
-    onSelectWeek: undefined,
+    onSelect: undefined,
     pickWeek: false
   }
 
@@ -19,14 +20,15 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     className: PropTypes.string,
     defaultCurrentDate: PropTypes.instanceOf(Date).isRequired,
     mode: PropTypes.string.isRequired,
-    onSelectWeek: PropTypes.func,
+    onSelect: PropTypes.func,
     pickWeek: PropTypes.bool.isRequired,
     weeksAvailable: PropTypes.object
   })
 
   setup() {
     this.useStates({
-      currentDate: this.props.defaultCurrentDate
+      currentDate: this.props.defaultCurrentDate,
+      selectedDate: null
     })
 
     this.weeksInMonth = useMemo(() => this.getWeeksInMonth(), [this.s.currentDate])
@@ -34,6 +36,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
   render() {
     const {className, pickWeek} = this.props
+    const {mode} = this.p
     const {currentDate} = this.s
 
     return (
@@ -107,28 +110,16 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                   </Text>
                 </Column>
                 {daysInWeek.map(({date, dayNumber, last}) =>
-                  <Column
-                    dataSet={{
-                      class: "day-column",
-                      dayNumber: dayNumber
-                    }}
+                  <DateColumn
+                    currentDate={currentDate}
+                    date={date}
+                    dayNumber={dayNumber}
+                    isWeekActive={this.isWeekActive(date)}
                     key={`day-${dayNumber}`}
-                    style={{
-                      paddingTop: 4,
-                      paddingRight: last ? 20 : 4,
-                      paddingBottom: 4,
-                      paddingLeft: 4
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: this.isWeekActive(date) ? "#fff" : date.getMonth() == currentDate.getMonth() ? undefined : "grey",
-                        textAlign: "center"
-                      }}
-                    >
-                      {date.getDate()}
-                    </Text>
-                  </Column>
+                    last={last}
+                    mode={mode}
+                    onPress={this.tt.onDatePress}
+                  />
                 )}
               </WeekRow>
             )}
@@ -165,9 +156,31 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     return Boolean(year in weeksAvailable && week in weeksAvailable[year])
   }
 
-  onNextMonthClicked = (e) => {
-    e.preventDefault()
+  onDatePress = ({date}) => {
+    if (this.p.mode == "dateRange") {
+      if (this.s.selectedDate) {
+        let fromDate
+        let toDate
 
+        if (this.s.selectedDate < date) {
+          fromDate = this.s.selectedDate
+          toDate = date
+        } else {
+          fromDate = date
+          toDate = this.s.selectedDate
+        }
+
+        this.p.onSelect({fromDate, toDate})
+        this.setState({selectedDate: null})
+      } else {
+        this.setState({selectedDate: date})
+      }
+    } else {
+      throw new Error(`Unhandled mode: ${this.p.mode}`)
+    }
+  }
+
+  onNextMonthClicked = () => {
     const {currentDate} = this.s
     let nextYear = currentDate.getFullYear()
     let nextMonth
@@ -184,9 +197,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     this.setState({currentDate: newCurrentDate})
   }
 
-  onPreviousMonthClicked = (e) => {
-    e.preventDefault()
-
+  onPreviousMonthClicked = () => {
     const {currentDate} = this.s
     const newCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
 
@@ -194,9 +205,9 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   onSelectWeek = ({e, weekDate, weekNumber}) => {
-    const {onSelectWeek, pickWeek} = this.p
+    const {onSelect, pickWeek} = this.p
 
-    if (!pickWeek || !onSelectWeek) return
+    if (!pickWeek || !onSelect) return
     if (!this.isWeekAvailable(weekDate)) return
 
     e.preventDefault()
