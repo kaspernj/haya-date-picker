@@ -71,6 +71,7 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
       <Column
         dataSet={{
           class: "day-column",
+          date: date.getDate(),
           dayNumber: dayNumber,
           weekActive: isWeekActive
         }}

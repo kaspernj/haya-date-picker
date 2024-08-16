@@ -39,12 +39,12 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
             </View>
           </Modal>
         }
-        <Pressable onPress={this.tt.onPressed}>
+        <Pressable dataSet={{component: "haya-date-picker--input"}} onPress={this.tt.onPressed}>
           <View style={actualViewStyle}>
             <Text>
               &#x1f4c5;
             </Text>
-            <Text style={actualTextStyle}>
+            <Text dataSet={{class: "current-value-text"}} style={actualTextStyle}>
               {dateFrom && dateTo &&
                 <>{I18n.strftime("%Y-%m-%d", dateFrom)} - {I18n.strftime("%Y-%m-%d", dateTo)}</>
               }
