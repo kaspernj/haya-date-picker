@@ -11,8 +11,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   static defaultProps = {
     activeDates: undefined,
     defaultCurrentDate: new Date(),
-    onSelect: undefined,
-    pickWeek: false
+    onSelect: undefined
   }
 
   static propTypes = propTypesExact({
@@ -23,9 +22,10 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     defaultCurrentDate: PropTypes.instanceOf(Date).isRequired,
     mode: PropTypes.string.isRequired,
     onSelect: PropTypes.func,
-    pickWeek: PropTypes.bool.isRequired,
     weeksAvailable: PropTypes.object
   })
+
+  debug = false
 
   setup() {
     this.useStates({
@@ -37,7 +37,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   render() {
-    const {className, pickWeek} = this.props
+    const {className} = this.props
     const {mode} = this.p
     const {currentDate} = this.s
 
@@ -73,7 +73,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
             </Pressable>
           </View>
         </View>
-        <Table dataSet={{class: "date-picker-table", pickWeek: "pickWeek"}}>
+        <Table dataSet={{class: "date-picker-table"}}>
           <Thead>
             <Row className="day-headers">
               <HeadColumn style={{paddingLeft: 20}} />
@@ -96,18 +96,18 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
             </Row>
           </Thead>
           <Tbody>
-            {this.weeksInMonth.map(({date, daysInWeek, weekNumber}) =>
+            {this.weeksInMonth.map(({daysInWeek, weekDate, weekNumber}) =>
               <WeekRow
                 key={`week-${weekNumber}`}
+                mode={mode}
                 onClick={this.tt.onSelectWeek}
-                pickWeek={pickWeek}
-                weekActive={this.isWeekActive(date)}
-                weekAvailable={this.isWeekAvailable(date)}
-                weekDate={date}
+                weekActive={this.isWeekActive(weekDate)}
+                weekAvailable={this.isWeekAvailable(weekDate)}
+                weekDate={weekDate}
                 weekNumber={weekNumber}
               >
                 <Column dataSet={{class: "week-number"}} style={{paddingLeft: 20}}>
-                  <Text style={{color: this.isWeekActive(date) ? "#fff" : undefined, fontWeight: "bold"}}>
+                  <Text style={{color: this.isWeekActive(weekDate) ? "#fff" : undefined, fontWeight: "bold"}}>
                     {weekNumber}
                   </Text>
                 </Column>
@@ -117,7 +117,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                     date={date}
                     dayNumber={dayNumber}
                     focus={this.focusDate(date)}
-                    isWeekActive={this.isWeekActive(date)}
+                    isWeekActive={this.isWeekActive(weekDate)}
                     key={`day-${dayNumber}`}
                     last={last}
                     mode={mode}
@@ -153,16 +153,22 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   isWeekActive(date) {
-    const {activeDates, mode, pickWeek} = this.p
+    const {activeDates, mode} = this.p
     const dateWeekNumber = this.weekNumberForDate(date)
 
-    if (!pickWeek || !activeDates || mode != "week") return false
+    if (!activeDates || mode != "week") {
+      this.log("No active dates or mode not week")
+
+      return false
+    }
 
     for (const activeDate of activeDates) {
       if (date.getFullYear() == activeDate.getFullYear() && this.weekNumberForDate(activeDate) == dateWeekNumber) {
         return true
       }
     }
+
+    this.log("isWeekActive return false")
 
     return false
   }
@@ -176,6 +182,22 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     const week = moment(date).isoWeek()
 
     return Boolean(year in weeksAvailable && week in weeksAvailable[year])
+  }
+
+  log(args) {
+    if (!this.debug) {
+      return
+    }
+
+    if (typeof args == "function") {
+      args = args()
+    }
+
+    if (!Array.isArray(args)) {
+      args = [args]
+    }
+
+    console.log(...args)
   }
 
   onDatePress = ({date}) => {
@@ -237,14 +259,24 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   onSelectWeek = ({e, weekDate, weekNumber}) => {
-    const {onSelect, pickWeek} = this.p
+    const {onSelect, mode} = this.p
 
-    if (!pickWeek || !onSelect) return
-    if (!this.isWeekAvailable(weekDate)) return
+    this.log(() => ["DatePicker onSelectWeek", {weekNumber}])
 
+    if (mode != "week" || !onSelect) {
+      this.log("Mode not week or no onSelect")
+
+      return
+    }
+
+    if (!this.isWeekAvailable(weekDate)) {
+      this.log("Click on date that wasn't available")
+
+      return
+    }
+
+    onSelect({weekDate})
     e.preventDefault()
-
-    onSelectWeek({weekDate, weekNumber})
   }
 
   weekDays() {
@@ -284,6 +316,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     endDate = endDate.toDate()
 
     while (dateCount.toDate() < endDate) {
+      const weekDate = dateCount.toDate()
       const weekNumber = dateCount.isoWeek()
       const daysInWeek = []
 
@@ -299,7 +332,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
       }
 
       weeks.push({
-        date: dateCount.toDate(),
+        weekDate,
         daysInWeek,
         weekNumber
       })
