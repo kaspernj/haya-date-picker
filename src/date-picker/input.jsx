@@ -1,4 +1,4 @@
-import {memo, useMemo} from "react"
+import {memo} from "react"
 import {Pressable, Text, View} from "react-native"
 import DatePicker from "./index"
 import PropTypes from "prop-types"
