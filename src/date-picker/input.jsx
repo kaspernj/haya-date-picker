@@ -7,6 +7,7 @@ import {ShapeComponent} from "set-state-compare/src/shape-component"
 export default memo(shapeComponent(class HayaDatePickerInput extends ShapeComponent {
   static propTypes = propTypesExact({
     datePickerProps: PropTypes.object.isRequired,
+    styles: PropTypes.object,
     textStyle: PropTypes.object,
     viewStyle: PropTypes.object
   })
