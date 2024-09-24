@@ -55,7 +55,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
         <View style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}}>
           <View style={{paddingLeft: "20px"}}>
             <Pressable onPress={this.tt.onPreviousMonthClicked}>
-              <Text style={{marginTop: -8, fontSize: 27}}>
+              <Text style={{marginTop: -8, fontSize: 27, userSelect: "none"}}>
                 &lsaquo;
               </Text>
             </Pressable>
@@ -67,7 +67,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
           </View>
           <View style={{paddingRight: "20px"}}>
             <Pressable onPress={this.tt.onNextMonthClicked}>
-              <Text style={{marginTop: -8, fontSize: 27}}>
+              <Text style={{marginTop: -8, fontSize: 27, userSelect: "none"}}>
                 &rsaquo;
               </Text>
             </Pressable>
