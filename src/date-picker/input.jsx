@@ -1,4 +1,4 @@
-import {Pressable, Text, View} from "react-native"
+import {Modal, Pressable, Text, View} from "react-native"
 import React, {memo} from "react"
 import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
 import DatePicker from "./index"

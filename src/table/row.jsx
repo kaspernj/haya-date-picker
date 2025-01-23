@@ -1,6 +1,6 @@
+import React, {memo} from "react"
 import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
 import dataSetToAttributes from "./data-set-to-attributes.mjs"
-import {memo} from "react"
 import {Platform} from "react-native"
 
 export default memo(shapeComponent(class TableRow extends ShapeComponent {
