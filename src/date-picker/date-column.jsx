@@ -1,9 +1,9 @@
+import {Pressable, Text, View} from "react-native"
+import React, {memo} from "react"
+import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
 import {Column} from "../table"
 import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
-import {memo} from "react"
-import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
-import {Pressable, Text, View} from "react-native"
 
 export default memo(shapeComponent(class DateColumn extends ShapeComponent {
   static propTypes = propTypesExact({

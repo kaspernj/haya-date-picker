@@ -1,10 +1,12 @@
 import {Column, HeadColumn, Row, Table, Tbody, Thead} from "../table"
+import React, {memo, useMemo} from "react"
+import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
 import DateColumn from "./date-column"
 import moment from "moment"
 import PropTypes from "prop-types"
-import {memo, useMemo} from "react"
-import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
+import propTypesExact from "prop-types-exact"
 import {Pressable, Text, View} from "react-native"
+import useI18n from "i18n-on-steroids/src/use-i18n.mjs"
 import WeekRow from "./week-row"
 
 export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
@@ -28,6 +30,9 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   debug = false
 
   setup() {
+    const {locale} = useI18n({namespace: "js.haya_date_picker.index"})
+
+    this.locale = locale
     this.useStates({
       currentDate: this.props.defaultCurrentDate,
       hoverDate: null,
@@ -37,6 +42,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   render() {
+    const {locale} = this.tt
     const {className} = this.props
     const {mode} = this.p
     const {currentDate} = this.s
@@ -62,7 +68,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
           </View>
           <View>
             <Text>
-              {currentDate.toLocaleString(I18n.locale, {month: "long"})} {currentDate.getFullYear()}
+              {currentDate.toLocaleString(locale, {month: "long"})} {currentDate.getFullYear()}
             </Text>
           </View>
           <View style={{paddingRight: "20px"}}>
@@ -89,7 +95,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                   }}
                 >
                   <Text style={{fontWeight: "bold", textAlign: "center"}}>
-                    {date.toLocaleString(I18n.locale, {weekday: "long"}).substring(0, 1)}
+                    {date.toLocaleString(locale, {weekday: "long"}).substring(0, 1)}
                   </Text>
                 </HeadColumn>
               )}
