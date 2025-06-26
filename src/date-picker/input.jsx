@@ -1,10 +1,10 @@
 import {Modal, Pressable, Text, View} from "react-native"
-import React, {memo} from "react"
+import React, {memo, useMemo} from "react"
 import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
 import DatePicker from "./index"
 import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
-import useI18n from "i18n-on-steroids/src/use-i18n.mjs"
+import strftime from "strftime"
 
 export default memo(shapeComponent(class HayaDatePickerInput extends ShapeComponent {
   static propTypes = propTypesExact({
@@ -15,8 +15,6 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
   })
 
   setup() {
-    const {strftime} = useI18n({namespace: "js.haya_date_picker.input"})
-
     this.strftime = strftime
     this.useStates({
       showDatePicker: false
@@ -28,14 +26,20 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
     const {datePickerProps = {}, styles} = this.props
     const {dateFrom, dateTo} = datePickerProps
     const {onSelect, ...restDatePickerProps} = datePickerProps
-    const actualViewStyle = Object.assign(
-      {flexDirection: "row"},
-      styles.view
-    )
-    const actualTextStyle = Object.assign(
-      {marginLeft: 8},
-      styles.text
-    )
+
+    const actualViewStyle = useMemo(() => {
+      return Object.assign(
+        {flexDirection: "row"},
+        styles.view
+      )
+    }, [styles.view])
+
+    const actualTextStyle = useMemo(() => {
+      return Object.assign(
+        {marginLeft: 8},
+        styles.text
+      )
+    }, [styles.text])
 
     return (
       <>
@@ -46,12 +50,12 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
             </View>
           </Modal>
         }
-        <Pressable dataSet={{component: "haya-date-picker--input"}} onPress={this.tt.onPressed}>
+        <Pressable dataSet={this.pressableDataSet ||= {component: "haya-date-picker--input"}} onPress={this.tt.onPressed}>
           <View style={actualViewStyle}>
             <Text>
               &#x1f4c5;
             </Text>
-            <Text dataSet={{class: "current-value-text"}} style={actualTextStyle}>
+            <Text dataSet={this.dateTextDataSet ||= {class: "current-value-text"}} style={actualTextStyle}>
               {dateFrom && dateTo &&
                 <>{strftime("%Y-%m-%d", dateFrom)} - {strftime("%Y-%m-%d", dateTo)}</>
               }

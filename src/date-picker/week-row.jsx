@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
-import React, {memo} from "react"
+import React, {memo, useMemo} from "react"
 import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
 import {Row} from "../table"
 
@@ -22,34 +22,40 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
 
   render() {
     const {dataSet, mode, onClick, weekActive, weekAvailable, weekDate, weekNumber, ...restProps} = this.props
-    const actualDataSet = Object.assign(
-      {
-        class: "week-row",
-        activeWeek: weekActive,
-        weekAvailable: weekAvailable,
-        weekNumber
-      },
-      dataSet
-    )
+    const actualDataSet = useMemo(() => {
+      return Object.assign(
+        {
+          class: "week-row",
+          activeWeek: weekActive,
+          weekAvailable: weekAvailable,
+          weekNumber
+        },
+        dataSet
+      )
+    }, [dataSet, weekActive, weekAvailable, weekNumber])
 
-    const style = {}
+    const style = useMemo(() => {
+      const style = {}
 
-    if (mode == "week") {
-      if (weekAvailable) {
-        style.cursor = "pointer"
-      } else {
-        style.cursor = "not-allowed"
+      if (mode == "week") {
+        if (weekAvailable) {
+          style.cursor = "pointer"
+        } else {
+          style.cursor = "not-allowed"
+        }
       }
-    }
 
-    if (mode == "week" && this.s.pointerOver) {
-      style.backgroundColor = "#f1f3f4"
-    }
+      if (mode == "week" && this.s.pointerOver) {
+        style.backgroundColor = "#f1f3f4"
+      }
 
-    if (weekActive) {
-      style.backgroundColor = "#039be5"
-      style.color = "#fff"
-    }
+      if (weekActive) {
+        style.backgroundColor = "#039be5"
+        style.color = "#fff"
+      }
+
+      return style
+    }, [mode, weekActive, weekAvailable, this.s.pointerOver])
 
     return (
       <Row

@@ -20,10 +20,11 @@
     "classnames": "^2.5.1",
     "moment": "^2.30.1",
     "prop-types": "^15.8.1",
-    "set-state-compare": "^1.0.46"
+    "set-state-compare": "^1.0.46",
+    "strftime": "^0.10.3"
   },
   "peerDependencies": {
-    "i18n-on-steroids": "*",
+    "@kaspernj/api-maker": "*",
     "react": "*",
     "react-native": "*"
   }
