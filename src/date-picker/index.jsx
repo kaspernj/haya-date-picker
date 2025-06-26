@@ -6,7 +6,7 @@ import moment from "moment"
 import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
 import {Pressable, Text, View} from "react-native"
-import useI18n from "i18n-on-steroids/src/use-i18n.mjs"
+import useLocale from "../use-locale"
 import WeekRow from "./week-row"
 
 export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
@@ -30,9 +30,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   debug = false
 
   setup() {
-    const {locale} = useI18n({namespace: "js.haya_date_picker.index"})
-
-    this.locale = locale
+    this.locale = useLocale()
     this.useStates({
       currentDate: this.props.defaultCurrentDate,
       hoverDate: null,
@@ -50,7 +48,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     return (
       <View
         dataSet={{component: "haya-date-picker", class: className}}
-        style={{
+        style={this.rootViewStyle ||= {
           display: "inline-block",
           backgroundColor: "#fff",
           borderRadius: 7,
@@ -58,10 +56,10 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
           paddingBottom: 16
         }}
       >
-        <View style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}}>
-          <View style={{paddingLeft: "20px"}}>
+        <View style={this.headerViewStyle ||= {display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}}>
+          <View style={this.previousViewStyle ||= {paddingLeft: 20}}>
             <Pressable onPress={this.tt.onPreviousMonthClicked}>
-              <Text style={{marginTop: -8, fontSize: 27, userSelect: "none"}}>
+              <Text style={this.previousTextStyle ||= {marginTop: -8, fontSize: 27, userSelect: "none"}}>
                 &lsaquo;
               </Text>
             </Pressable>
@@ -71,30 +69,30 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
               {currentDate.toLocaleString(locale, {month: "long"})} {currentDate.getFullYear()}
             </Text>
           </View>
-          <View style={{paddingRight: "20px"}}>
+          <View style={this.nextViewStyle ||= {paddingRight: 20}}>
             <Pressable onPress={this.tt.onNextMonthClicked}>
-              <Text style={{marginTop: -8, fontSize: 27, userSelect: "none"}}>
+              <Text style={this.nextTextStyle ||= {marginTop: -8, fontSize: 27, userSelect: "none"}}>
                 &rsaquo;
               </Text>
             </Pressable>
           </View>
         </View>
-        <Table dataSet={{class: "date-picker-table"}}>
+        <Table dataSet={this.tableDataSet ||= {class: "date-picker-table"}}>
           <Thead>
             <Row className="day-headers">
-              <HeadColumn style={{paddingLeft: 20}} />
+              <HeadColumn style={this.initialHeadColumnStyle ||= {paddingLeft: 20}} />
               {this.weekDays().map(({dayNumber, date, last}) =>
                 <HeadColumn
                   className="day-header"
                   key={`day-${dayNumber}`}
-                  style={{
+                  style={this.dayHeaderHeadColumnStyle ||= {
                     paddingTop: 4,
                     paddingRight: last ? 20 : 4,
                     paddingBottom: 4,
                     paddingLeft: 4
                   }}
                 >
-                  <Text style={{fontWeight: "bold", textAlign: "center"}}>
+                  <Text style={this.dayHeaderHeadColumnTextStyle ||= {fontWeight: "bold", textAlign: "center"}}>
                     {date.toLocaleString(locale, {weekday: "long"}).substring(0, 1)}
                   </Text>
                 </HeadColumn>
@@ -112,7 +110,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                 weekDate={weekDate}
                 weekNumber={weekNumber}
               >
-                <Column dataSet={{class: "week-number"}} style={{paddingLeft: 20}}>
+                <Column dataSet={this.weekNumberColumnDataSet ||= {class: "week-number"}} style={this.weekNumberColumnStyle ||= {paddingLeft: 20}}>
                   <Text style={{color: this.isWeekActive(weekDate) ? "#fff" : undefined, fontWeight: "bold"}}>
                     {weekNumber}
                   </Text>
@@ -207,7 +205,9 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   onDatePress = ({date}) => {
-    if (this.p.mode == "dateRange") {
+    if (this.p.mode == "date") {
+      this.p.onSelect({date})
+    } else if (this.p.mode == "dateRange") {
       if (this.s.selectedDate) {
         let fromDate
         let toDate

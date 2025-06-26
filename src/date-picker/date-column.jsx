@@ -1,5 +1,5 @@
 import {Pressable, Text, View} from "react-native"
-import React, {memo} from "react"
+import React, {memo, useMemo} from "react"
 import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
 import {Column} from "../table"
 import PropTypes from "prop-types"
@@ -28,38 +28,56 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
   render() {
     const {currentDate, date, dayNumber, focus, isWeekActive, last, mode} = this.p
     const {hover} = this.s
-    const style = {}
-    const viewStyle = {
-      paddingTop: 4,
-      paddingRight: 4,
-      paddingBottom: 4,
-      paddingLeft: 4,
-      borderRadius: 4
-    }
-    const textStyle = {
-      textAlign: "center"
-    }
 
-    if (isWeekActive) {
-      textStyle.color = "#fff"
-    } else if (date.getMonth() != currentDate.getMonth()) {
-      textStyle.color = "grey"
-    }
-
-    if (last) {
-      style.paddingRight = 20
-    }
-
-    if (mode == "dateRange") {
-      viewStyle.cursor = "pointer"
-
-      if (hover) {
-        viewStyle.backgroundColor = "#039be5"
-        textStyle.color = "#fff"
-      } else if (focus) {
-        viewStyle.backgroundColor = "#d7e4ea"
+    const viewStyle = useMemo(() => {
+      const viewStyle = {
+        paddingTop: 4,
+        paddingRight: 4,
+        paddingBottom: 4,
+        paddingLeft: 4,
+        borderRadius: 4
       }
-    }
+
+      if (mode == "date" || mode == "dateRange") {
+        viewStyle.cursor = "pointer"
+
+        if (hover) {
+          viewStyle.backgroundColor = "#039be5"
+        } else if (focus) {
+          viewStyle.backgroundColor = "#d7e4ea"
+        }
+      }
+
+      return viewStyle
+    }, [focus, hover, mode])
+
+    const textStyle = useMemo(() => {
+      const textStyle = {
+        textAlign: "center"
+      }
+
+      if (isWeekActive) {
+        textStyle.color = "#fff"
+      } else if (date.getMonth() != currentDate.getMonth()) {
+        textStyle.color = "grey"
+      }
+
+      if (mode == "dateRange" && hover) {
+        textStyle.color = "#fff"
+      }
+
+      return textStyle
+    }, [hover, mode, isWeekActive])
+
+    const style = useMemo(() => {
+      const style = {}
+
+      if (last) {
+        style.paddingRight = 20
+      }
+
+      return style
+    }, [last])
 
     const textContent = (
       <Text style={textStyle}>
@@ -67,30 +85,39 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
       </Text>
     )
 
+    const dataSet = useMemo(() => {
+      const dataSet = {
+        class: "day-column",
+        date: date.getDate(),
+        dayNumber: dayNumber,
+        weekActive: isWeekActive
+      }
+
+      return dataSet
+    }, [date.getDate()])
+
     return (
       <Column
-        dataSet={{
-          class: "day-column",
-          date: date.getDate(),
-          dayNumber: dayNumber,
-          weekActive: isWeekActive
-        }}
+        dataSet={dataSet}
         style={style}
       >
         {(() => {
-          if (mode == "dateRange") {
+          if (mode == "date" || mode == "dateRange") {
             return (
               <Pressable
-                children={textContent}
                 onPointerEnter={this.tt.onPointerEnter}
                 onPointerLeave={this.tt.onPointerLeave}
                 onPress={this.tt.onPress}
                 style={viewStyle}
-              />
+              >
+                {textContent}
+              </Pressable>
             )
           } else if (mode != "dateRange") {
             return (
-              <View children={textContent} style={viewStyle} />
+              <View style={viewStyle}>
+                {textContent}
+              </View>
             )
           } else {
             throw new Error(`Unknown mode: ${mode}`)
