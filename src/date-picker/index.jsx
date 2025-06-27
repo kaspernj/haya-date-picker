@@ -117,11 +117,11 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                 </Column>
                 {daysInWeek.map(({date, dayNumber, last}) =>
                   <DateColumn
+                    active={this.isDateActive(date) || this.isWeekActive(weekDate)}
                     currentDate={currentDate}
                     date={date}
                     dayNumber={dayNumber}
                     focus={this.focusDate(date)}
-                    isWeekActive={this.isWeekActive(weekDate)}
                     key={`day-${dayNumber}`}
                     last={last}
                     mode={mode}
@@ -150,6 +150,16 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     if (hoverDate > selectedDate && date >= selectedDate && date <= hoverDate) {
       return true
     } else if (hoverDate < selectedDate && date <= selectedDate && date >= hoverDate) {
+      return true
+    }
+
+    return false
+  }
+
+  isDateActive(date) {
+    const {currentDate} = this.s
+
+    if (currentDate && currentDate.getFullYear() == date.getFullYear() && currentDate.getMonth() == date.getMonth() && currentDate.getDate() == date.getDate()) {
       return true
     }
 
