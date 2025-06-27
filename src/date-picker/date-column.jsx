@@ -7,11 +7,11 @@ import propTypesExact from "prop-types-exact"
 
 export default memo(shapeComponent(class DateColumn extends ShapeComponent {
   static propTypes = propTypesExact({
+    active: PropTypes.bool.isRequired,
     currentDate: PropTypes.instanceOf(Date).isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
     dayNumber: PropTypes.number.isRequired,
     focus: PropTypes.bool.isRequired,
-    isWeekActive: PropTypes.bool.isRequired,
     last: PropTypes.bool.isRequired,
     mode: PropTypes.string.isRequired,
     onPress: PropTypes.func.isRequired,
@@ -26,7 +26,7 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
   }
 
   render() {
-    const {currentDate, date, dayNumber, focus, isWeekActive, last, mode} = this.p
+    const {active, currentDate, date, dayNumber, focus, last, mode} = this.p
     const {hover} = this.s
 
     const viewStyle = useMemo(() => {
@@ -41,7 +41,7 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
       if (mode == "date" || mode == "dateRange") {
         viewStyle.cursor = "pointer"
 
-        if (hover) {
+        if (active || hover) {
           viewStyle.backgroundColor = "#039be5"
         } else if (focus) {
           viewStyle.backgroundColor = "#d7e4ea"
@@ -56,7 +56,7 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
         textAlign: "center"
       }
 
-      if (isWeekActive) {
+      if (active) {
         textStyle.color = "#fff"
       } else if (date.getMonth() != currentDate.getMonth()) {
         textStyle.color = "grey"
@@ -67,7 +67,7 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
       }
 
       return textStyle
-    }, [hover, mode, isWeekActive])
+    }, [hover, mode, active])
 
     const style = useMemo(() => {
       const style = {}
@@ -90,7 +90,7 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
         class: "day-column",
         date: date.getDate(),
         dayNumber: dayNumber,
-        weekActive: isWeekActive
+        weekActive: active
       }
 
       return dataSet
