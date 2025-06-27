@@ -67,17 +67,11 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
       }
 
       return textStyle
-    }, [hover, mode, active])
+    }, [active, hover, mode, active])
 
-    const style = useMemo(() => {
-      const style = {}
-
-      if (last) {
-        style.paddingRight = 20
-      }
-
-      return style
-    }, [last])
+    const style = useMemo(() => ({
+      paddingRight: last ? 20 : undefined
+    }), [last])
 
     const textContent = (
       <Text style={textStyle}>
@@ -85,16 +79,12 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
       </Text>
     )
 
-    const dataSet = useMemo(() => {
-      const dataSet = {
-        class: "day-column",
-        date: date.getDate(),
-        dayNumber: dayNumber,
-        weekActive: active
-      }
-
-      return dataSet
-    }, [date.getDate()])
+    const dataSet = useMemo(() => ({
+      class: "day-column",
+      date: date.getDate(),
+      dayNumber: dayNumber,
+      weekActive: active
+    }), [active, date.getDate()])
 
     return (
       <Column

@@ -32,7 +32,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   setup() {
     this.locale = useLocale()
     this.useStates({
-      currentDate: this.props.defaultCurrentDate,
+      currentDate: this.p.defaultCurrentDate,
       hoverDate: null,
       selectedDate: null
     })
@@ -122,7 +122,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                     date={date}
                     dayNumber={dayNumber}
                     focus={this.focusDate(date)}
-                    key={`day-${dayNumber}`}
+                    key={`date-column-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
                     last={last}
                     mode={mode}
                     onPointerEnter={this.tt.onPointerEnterDate}
@@ -157,9 +157,10 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   isDateActive(date) {
-    const {currentDate} = this.s
+    const {defaultCurrentDate} = this.p
+    const {selectedDate} = this.s
 
-    if (currentDate && currentDate.getFullYear() == date.getFullYear() && currentDate.getMonth() == date.getMonth() && currentDate.getDate() == date.getDate()) {
+    if (!selectedDate && defaultCurrentDate && defaultCurrentDate.getFullYear() == date.getFullYear() && defaultCurrentDate.getMonth() == date.getMonth() && defaultCurrentDate.getDate() == date.getDate()) {
       return true
     }
 
