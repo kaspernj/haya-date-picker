@@ -1,3 +1,5 @@
+// @ts-check
+
 import Config from "./config.js"
 import events from "./events.js"
 import React from "react"
