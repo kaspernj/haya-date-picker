@@ -1,7 +1,7 @@
 import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
 import React, {memo, useMemo} from "react"
-import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
+import {shapeComponent, ShapeComponent} from "set-state-compare/build/shape-component"
 import {Row} from "../table"
 
 export default memo(shapeComponent(class WeekRow extends ShapeComponent {

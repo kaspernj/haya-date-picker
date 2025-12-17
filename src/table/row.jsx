@@ -1,5 +1,5 @@
 import React, {memo} from "react"
-import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
+import {shapeComponent, ShapeComponent} from "set-state-compare/build/shape-component"
 import dataSetToAttributes from "./data-set-to-attributes.mjs"
 import {Platform} from "react-native"
 

@@ -1,6 +1,6 @@
 import {Column, HeadColumn, Row, Table, Tbody, Thead} from "../table"
 import React, {memo, useMemo} from "react"
-import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
+import {shapeComponent, ShapeComponent} from "set-state-compare/build/shape-component"
 import DateColumn from "./date-column"
 import moment from "moment"
 import PropTypes from "prop-types"

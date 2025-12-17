@@ -1,6 +1,6 @@
 import {Pressable, Text, View} from "react-native"
 import React, {memo, useMemo} from "react"
-import {shapeComponent, ShapeComponent} from "set-state-compare/src/shape-component"
+import {shapeComponent, ShapeComponent} from "set-state-compare/build/shape-component"
 import {Column} from "../table"
 import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
