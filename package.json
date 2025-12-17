@@ -2,9 +2,17 @@
   "name": "haya-date-picker",
   "version": "1.0.16",
   "description": "",
-  "main": "index.js",
+  "files": [
+    "build/**"
+  ],
+  "types": "build/index.d.ts",
+  "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rm -rf build && tsc -p tsconfig.json || true",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "tsc --noEmit",
+    "watch": "tsc -p tsconfig.json -w"
   },
   "repository": {
     "type": "git",
@@ -20,12 +28,15 @@
     "classnames": "^2.5.1",
     "moment": "^2.30.1",
     "prop-types": "^15.8.1",
-    "set-state-compare": "^1.0.46",
+    "set-state-compare": "^1.0.61",
     "strftime": "^0.10.3"
   },
   "peerDependencies": {
-    "@kaspernj/api-maker": "*",
-    "react": "*",
+    "@kaspernj/api-maker": ">= 1.0.2055",
+    "react": "^18.3.1",
     "react-native": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
   }
 }
