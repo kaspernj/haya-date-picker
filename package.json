@@ -33,7 +33,7 @@
   },
   "peerDependencies": {
     "@kaspernj/api-maker": ">= 1.0.2055",
-    "react": "^18.3.1",
+    "react": "*",
     "react-native": "*"
   },
   "devDependencies": {
