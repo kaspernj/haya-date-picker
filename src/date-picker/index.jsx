@@ -48,18 +48,18 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     return (
       <View
         dataSet={{component: "haya-date-picker", class: className}}
-        style={this.rootViewStyle ||= {
+        style={this.cache("rootViewStyle", {
           display: "inline-block",
           backgroundColor: "#fff",
           borderRadius: 7,
           paddingTop: 16,
           paddingBottom: 16
-        }}
+        })}
       >
-        <View style={this.headerViewStyle ||= {display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}}>
-          <View style={this.previousViewStyle ||= {paddingLeft: 20}}>
+        <View style={this.cache("headerViewStyle", {display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"})}>
+          <View style={this.cache("previousViewStyle", {paddingLeft: 20})}>
             <Pressable onPress={this.tt.onPreviousMonthClicked}>
-              <Text style={this.previousTextStyle ||= {marginTop: -8, fontSize: 27, userSelect: "none"}}>
+              <Text style={this.cache("previousTextStyle", {marginTop: -8, fontSize: 27, userSelect: "none"})}>
                 &lsaquo;
               </Text>
             </Pressable>
@@ -69,30 +69,30 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
               {currentDate.toLocaleString(locale, {month: "long"})} {currentDate.getFullYear()}
             </Text>
           </View>
-          <View style={this.nextViewStyle ||= {paddingRight: 20}}>
+          <View style={this.cache("nextViewStyle", {paddingRight: 20})}>
             <Pressable onPress={this.tt.onNextMonthClicked}>
-              <Text style={this.nextTextStyle ||= {marginTop: -8, fontSize: 27, userSelect: "none"}}>
+              <Text style={this.cache("nextTextStyle", {marginTop: -8, fontSize: 27, userSelect: "none"})}>
                 &rsaquo;
               </Text>
             </Pressable>
           </View>
         </View>
-        <Table dataSet={this.tableDataSet ||= {class: "date-picker-table"}}>
+        <Table dataSet={this.cache("tableDataSet", {class: "date-picker-table"})}>
           <Thead>
             <Row className="day-headers">
-              <HeadColumn style={this.initialHeadColumnStyle ||= {paddingLeft: 20}} />
+              <HeadColumn style={this.cache("initialHeadColumnStyle", {paddingLeft: 20})} />
               {this.weekDays().map(({dayNumber, date, last}) =>
                 <HeadColumn
                   className="day-header"
                   key={`day-${dayNumber}`}
-                  style={this.dayHeaderHeadColumnStyle ||= {
+                  style={this.cache("dayHeaderHeadColumnStyle", {
                     paddingTop: 4,
                     paddingRight: last ? 20 : 4,
                     paddingBottom: 4,
                     paddingLeft: 4
-                  }}
+                  })}
                 >
-                  <Text style={this.dayHeaderHeadColumnTextStyle ||= {fontWeight: "bold", textAlign: "center"}}>
+                  <Text style={this.cache("dayHeaderHeadColumnTextStyle", {fontWeight: "bold", textAlign: "center"})}>
                     {date.toLocaleString(locale, {weekday: "long"}).substring(0, 1)}
                   </Text>
                 </HeadColumn>
