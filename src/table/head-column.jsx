@@ -1,6 +1,6 @@
 import React, {memo} from "react"
 import {shapeComponent, ShapeComponent} from "set-state-compare/build/shape-component"
-import {Platform} from "react-native"
+import {Platform, View} from "react-native"
 
 export default memo(shapeComponent(class TableHeadColumn extends ShapeComponent {
   render() {
