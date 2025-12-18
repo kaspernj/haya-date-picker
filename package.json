@@ -1,6 +1,6 @@
 {
   "name": "haya-date-picker",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "",
   "files": [
     "build/**"
@@ -18,7 +18,7 @@
     "type": "git",
     "url": "git+https://github.com/kaspernj/haya-date-picker.git"
   },
-  "author": "k@spernj.org",
+  "author": "kasper@diestoeckels.de",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/kaspernj/haya-date-picker/issues"
