@@ -3,7 +3,7 @@
 import Config from "./config.js"
 import events from "./events.js"
 import React from "react"
-import useEventEmitter from "@kaspernj/api-maker/build/use-event-emitter.js"
+import useEventEmitter from "ya-use-event-emitter"
 
 export default function useLocale() {
   const [locale, setLocale] = React.useState(Config.current().getLocale())
