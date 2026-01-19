@@ -7,8 +7,11 @@ const {spawnSync} = require("node:child_process")
  * @param {string[]} args
  * @returns {{status: number, stdout: string, stderr: string}}
  */
-function run(command, args) {
-  const result = spawnSync(command, args, {encoding: "utf8", stdio: "pipe"})
+function run(command, args, options = {}) {
+  const result = spawnSync(command, args, {
+    encoding: "utf8",
+    stdio: options.stdio || "pipe"
+  })
 
   if (result.error) {
     throw result.error
@@ -54,7 +57,7 @@ function ensureNpmLogin() {
   const status = runQuiet("npm", ["whoami"])
 
   if (status !== 0) {
-    run("npm", ["login"])
+    run("npm", ["login"], {stdio: "inherit"})
   }
 }
 
@@ -65,7 +68,7 @@ function releasePatch() {
   run("git", ["push", "origin", "HEAD"])
   run("git", ["push", "origin", "--tags"])
   ensureNpmLogin()
-  run("npm", ["publish"])
+  run("npm", ["publish"], {stdio: "inherit"})
 }
 
 releasePatch()
