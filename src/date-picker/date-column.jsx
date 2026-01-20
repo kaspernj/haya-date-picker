@@ -6,6 +6,10 @@ import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
 
 export default memo(shapeComponent(class DateColumn extends ShapeComponent {
+  static defaultProps = {
+    styles: {}
+  }
+
   static propTypes = propTypesExact({
     active: PropTypes.bool.isRequired,
     currentDate: PropTypes.instanceOf(Date).isRequired,
@@ -30,13 +34,16 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
   }
 
   render() {
-    const {active, currentDate, date, dayNumber, focus, last, mode, rangeEnd, rangePreviewEnd, rangeStart, styles} = this.p
+    const {active, currentDate, date, dayNumber, focus, last, mode} = this.p
+    const {rangeEnd, rangePreviewEnd, rangeStart, styles} = this.props
     const {hover} = this.s
     const isOutsideMonth = date.getMonth() != currentDate.getMonth()
     const isRangeStart = this.sameDate(rangeStart, date)
     const isRangeEnd = this.sameDate(rangeEnd, date)
     const hasRange = Boolean(rangeStart && rangeEnd)
-    const isInRange = hasRange ? this.isBetweenDates(date, rangeStart, rangeEnd) : false
+    const isInRange = hasRange
+      ? this.isBetweenDates(date, rangeStart, rangeEnd) && !isRangeStart && !isRangeEnd
+      : false
     const previewStart = rangeStart
     const hasPreviewRange = Boolean(previewStart && rangePreviewEnd && !rangeEnd)
     const isInPreviewRange = hasPreviewRange ? this.isBetweenDates(date, previewStart, rangePreviewEnd) : false

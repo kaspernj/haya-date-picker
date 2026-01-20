@@ -14,7 +14,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     activeDates: undefined,
     defaultCurrentDate: new Date(),
     onSelect: undefined,
-    showWeekNumbers: true
+    showWeekNumbers: true,
+    styles: {}
   }
 
   static propTypes = propTypesExact({
@@ -135,9 +136,9 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                     key={`date-column-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
                     last={last}
                     mode={mode}
-                    rangeEnd={this.p.dateTo}
+                    rangeEnd={this.props.dateTo}
                     rangePreviewEnd={this.s.hoverDate}
-                    rangeStart={this.p.dateFrom || this.s.selectedDate}
+                    rangeStart={this.props.dateFrom || this.s.selectedDate}
                     onPointerEnter={this.tt.onPointerEnterDate}
                     onPointerLeave={this.tt.onPointerLeaveDate}
                     onPress={this.tt.onDatePress}
@@ -156,8 +157,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
   focusDate(date) {
     const {hoverDate, selectedDate} = this.s
-    const rangeStart = this.p.dateFrom || selectedDate
-    const rangeEnd = this.p.dateTo
+    const rangeStart = this.props.dateFrom || selectedDate
+    const rangeEnd = this.props.dateTo
 
     if (!hoverDate || !rangeStart || rangeEnd) {
       return false
@@ -173,7 +174,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   isDateActive(date) {
-    const {dateFrom, dateTo, defaultCurrentDate, mode} = this.p
+    const {dateFrom, dateTo} = this.props
+    const {defaultCurrentDate, mode} = this.p
     const {selectedDate} = this.s
 
     if (mode == "dateRange") {
@@ -195,7 +197,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   isWeekActive(date) {
-    const {activeDates, mode} = this.p
+    const {activeDates} = this.props
+    const {mode} = this.p
     const dateWeekNumber = this.weekNumberForDate(date)
 
     if (!activeDates || mode != "week") {
@@ -243,32 +246,28 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   onDatePress = ({date}) => {
-    if (this.p.mode == "date") {
-      this.p.onSelect({date})
-    } else if (this.p.mode == "dateRange") {
-      const rangeStart = this.p.dateFrom || this.s.selectedDate
+    const {dateFrom, dateTo, onRangeSelect, onSelect} = this.props
+    const {mode} = this.p
 
-      if (rangeStart && !this.p.dateTo && rangeStart.getTime() != date.getTime()) {
-        let fromDate
-        let toDate
+    if (mode == "date") {
+      if (onSelect) onSelect({date})
+    } else if (mode == "dateRange") {
+      const rangeStart = dateFrom || this.s.selectedDate
 
-        if (rangeStart < date) {
-          fromDate = rangeStart
-          toDate = date
-        } else {
-          fromDate = date
-          toDate = rangeStart
-        }
+      if (rangeStart && !dateTo) {
+        const {fromDate, toDate} = rangeStart <= date
+          ? {fromDate: rangeStart, toDate: date}
+          : {fromDate: date, toDate: rangeStart}
 
-        this.p.onSelect({fromDate, toDate})
-        if (this.p.onRangeSelect) this.p.onRangeSelect({fromDate, toDate})
+        if (onSelect) onSelect({fromDate, toDate})
+        if (onRangeSelect) onRangeSelect({fromDate, toDate})
         this.setState({selectedDate: null})
       } else {
         this.setState({selectedDate: date})
-        if (this.p.onRangeSelect) this.p.onRangeSelect({fromDate: date, toDate: null})
+        if (onRangeSelect) onRangeSelect({fromDate: date, toDate: null})
       }
     } else {
-      throw new Error(`Unhandled mode: ${this.p.mode}`)
+      throw new Error(`Unhandled mode: ${mode}`)
     }
   }
 
@@ -307,7 +306,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   onSelectWeek = ({e, weekDate, weekNumber}) => {
-    const {onSelect, mode} = this.p
+    const {onSelect} = this.props
+    const {mode} = this.p
 
     this.log(() => ["DatePicker onSelectWeek", {weekNumber}])
 
