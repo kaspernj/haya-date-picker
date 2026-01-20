@@ -10,6 +10,7 @@
     "module": "nodenext",
     "outDir": "build",
     "rootDir": "src",
+    "skipLibCheck": true,
     "declarationMap": true,
     "sourceMap": true,
     "sourceRoot": "/src",

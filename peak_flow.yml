@@ -2,3 +2,4 @@ before_script:
   - npm install
 script:
   - npm run build
+  - SYSTEM_TEST_HTTP_HOST=0.0.0.0 npm run test:dist

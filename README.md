@@ -139,6 +139,7 @@ Config.current().setTranslate((msgID) => {
 
 ```sh
 npm run build
+npm run test:dist
 npm run typecheck
 npm run watch
 ```

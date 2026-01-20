@@ -9,9 +9,11 @@
   "main": "build/index.js",
   "scripts": {
     "build": "rm -rf build && tsc -p tsconfig.json || true",
+    "build:example:dist": "node scripts/build-example.js",
     "prepublishOnly": "npm run build",
     "release:patch": "node scripts/release-patch.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node scripts/velocious-test.js",
+    "test:dist": "npm run build:example:dist && SYSTEM_TEST_HOST=dist npm test",
     "typecheck": "tsc --noEmit",
     "watch": "tsc -p tsconfig.json -w"
   },
@@ -39,6 +41,16 @@
     "react-native": "*"
   },
   "devDependencies": {
+    "@kaspernj/api-maker": "^1.0.2082",
+    "awaitery": "^1.0.12",
+    "esbuild": "^0.25.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-native-web": "^0.21.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "system-testing": "^1.0.62",
+    "velocious": "^1.0.176",
     "typescript": "^5.9.3"
   }
 }
