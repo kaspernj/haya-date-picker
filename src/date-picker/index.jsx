@@ -34,6 +34,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   })
 
   debug = false
+  weekNumberColumnDataSet = undefined
+  weekNumberColumnStyle = undefined
 
   setup() {
     this.locale = useLocale()
@@ -346,7 +348,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     return result
   }
 
-  firstDay = () => new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth(), 1)
+  firstDay = () => new Date(this.s.currentDate.getFullYear(), this.s.currentDate.getMonth(), 1)
   firstDayOfWeek = () => this.firstDay().getDay()
   weekNumberForDate = (date) => moment(date).isoWeek()
 
@@ -372,14 +374,14 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     const {currentDate} = this.s
     const firstInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
     const weeks = []
-    let dateCount = moment(firstInMonth).startOf("month").isoWeekday(1)
-    let endDate = moment(currentDate).endOf("month")
+    const dateCount = moment(firstInMonth).startOf("month").isoWeekday(1)
+    let endDateMoment = moment(currentDate).endOf("month")
 
-    if (endDate.isoWeekday() != 7) {
-      endDate = endDate.add(7 - endDate.isoWeekday(), "days")
+    if (endDateMoment.isoWeekday() != 7) {
+      endDateMoment = endDateMoment.add(7 - endDateMoment.isoWeekday(), "days")
     }
 
-    endDate = endDate.toDate()
+    const endDate = endDateMoment.toDate()
 
     while (dateCount.toDate() < endDate) {
       const weekDate = dateCount.toDate()
