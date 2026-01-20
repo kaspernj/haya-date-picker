@@ -13,7 +13,8 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   static defaultProps = {
     activeDates: undefined,
     defaultCurrentDate: new Date(),
-    onSelect: undefined
+    onSelect: undefined,
+    showWeekNumbers: true
   }
 
   static propTypes = propTypesExact({
@@ -23,7 +24,11 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     dateTo: PropTypes.instanceOf(Date),
     defaultCurrentDate: PropTypes.instanceOf(Date).isRequired,
     mode: PropTypes.string.isRequired,
+    onRangeSelect: PropTypes.func,
     onSelect: PropTypes.func,
+    showWeekNumbers: PropTypes.bool,
+    styles: PropTypes.object,
+    weekdayFormatter: PropTypes.func,
     weeksAvailable: PropTypes.object
   })
 
@@ -41,59 +46,62 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
   render() {
     const {locale} = this.tt
-    const {className} = this.props
+    const {className, showWeekNumbers, styles} = this.props
     const {mode} = this.p
     const {currentDate} = this.s
+    const weekNumbersVisible = showWeekNumbers !== false
 
     return (
       <View
         dataSet={{component: "haya-date-picker", class: className}}
-        style={this.cache("rootViewStyle", {
+        style={this.cache("rootViewStyle", () => this.stylingFor("rootViewStyle", {
           display: "inline-block",
           backgroundColor: "#fff",
           borderRadius: 7,
           paddingTop: 16,
           paddingBottom: 16
-        })}
+        }), [styles?.rootViewStyle])}
       >
-        <View style={this.cache("headerViewStyle", {display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"})}>
-          <View style={this.cache("previousViewStyle", {paddingLeft: 20})}>
-            <Pressable onPress={this.tt.onPreviousMonthClicked}>
-              <Text style={this.cache("previousTextStyle", {marginTop: -8, fontSize: 27, userSelect: "none"})}>
+        <View style={this.cache("headerViewStyle", () => this.stylingFor("headerViewStyle", {display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}), [styles?.headerViewStyle])}>
+          <View style={this.cache("previousViewStyle", () => this.stylingFor("previousViewStyle", {paddingLeft: weekNumbersVisible ? 20 : 0}), [styles?.previousViewStyle, weekNumbersVisible])}>
+            <Pressable onPress={this.tt.onPreviousMonthClicked} style={this.cache("previousButtonStyle", () => this.stylingFor("previousButtonStyle", {}), [styles?.previousButtonStyle])}>
+              <Text style={this.cache("previousTextStyle", () => this.stylingFor("previousTextStyle", {marginTop: -8, fontSize: 27, userSelect: "none"}), [styles?.previousTextStyle])}>
                 &lsaquo;
               </Text>
             </Pressable>
           </View>
           <View>
-            <Text>
+            <Text style={this.cache("titleTextStyle", () => this.stylingFor("titleTextStyle", {}), [styles?.titleTextStyle])}>
               {currentDate.toLocaleString(locale, {month: "long"})} {currentDate.getFullYear()}
             </Text>
           </View>
-          <View style={this.cache("nextViewStyle", {paddingRight: 20})}>
-            <Pressable onPress={this.tt.onNextMonthClicked}>
-              <Text style={this.cache("nextTextStyle", {marginTop: -8, fontSize: 27, userSelect: "none"})}>
+          <View style={this.cache("nextViewStyle", () => this.stylingFor("nextViewStyle", {paddingRight: 20}), [styles?.nextViewStyle])}>
+            <Pressable onPress={this.tt.onNextMonthClicked} style={this.cache("nextButtonStyle", () => this.stylingFor("nextButtonStyle", {}), [styles?.nextButtonStyle])}>
+              <Text style={this.cache("nextTextStyle", () => this.stylingFor("nextTextStyle", {marginTop: -8, fontSize: 27, userSelect: "none"}), [styles?.nextTextStyle])}>
                 &rsaquo;
               </Text>
             </Pressable>
           </View>
         </View>
-        <Table dataSet={this.cache("tableDataSet", {class: "date-picker-table"})}>
+        <Table dataSet={this.cache("tableDataSet", {class: "date-picker-table"})} style={this.cache("tableStyle", () => this.stylingFor("tableStyle", {}), [styles?.tableStyle])}>
           <Thead>
             <Row className="day-headers">
-              <HeadColumn style={this.cache("initialHeadColumnStyle", {paddingLeft: 20})} />
+              {weekNumbersVisible &&
+                <HeadColumn style={this.cache("initialHeadColumnStyle", () => this.stylingFor("initialHeadColumnStyle", {paddingLeft: 20}), [styles?.initialHeadColumnStyle])} />
+              }
               {this.weekDays().map(({dayNumber, date, last}) =>
                 <HeadColumn
                   className="day-header"
                   key={`day-${dayNumber}`}
-                  style={this.cache("dayHeaderHeadColumnStyle", {
+                  style={this.cache("dayHeaderHeadColumnStyle", () => this.stylingFor("dayHeaderHeadColumnStyle", {
                     paddingTop: 4,
                     paddingRight: last ? 20 : 4,
                     paddingBottom: 4,
                     paddingLeft: 4
-                  })}
+                  }), [styles?.dayHeaderHeadColumnStyle, last])}
                 >
-                  <Text style={this.cache("dayHeaderHeadColumnTextStyle", {fontWeight: "bold", textAlign: "center"})}>
-                    {date.toLocaleString(locale, {weekday: "long"}).substring(0, 1)}
+                  <Text style={this.cache("dayHeaderHeadColumnTextStyle", () => this.stylingFor("dayHeaderHeadColumnTextStyle", {fontWeight: "bold", textAlign: "center"}), [styles?.dayHeaderHeadColumnTextStyle])}>
+                    {this.weekdayLabel({date, dayNumber, locale})}
                   </Text>
                 </HeadColumn>
               )}
@@ -110,11 +118,13 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                 weekDate={weekDate}
                 weekNumber={weekNumber}
               >
-                <Column dataSet={this.weekNumberColumnDataSet ||= {class: "week-number"}} style={this.weekNumberColumnStyle ||= {paddingLeft: 20}}>
-                  <Text style={{color: this.isWeekActive(weekDate) ? "#fff" : undefined, fontWeight: "bold"}}>
-                    {weekNumber}
-                  </Text>
-                </Column>
+                {weekNumbersVisible &&
+                  <Column dataSet={this.weekNumberColumnDataSet ||= {class: "week-number"}} style={this.weekNumberColumnStyle ||= {paddingLeft: 20}}>
+                    <Text style={this.cache("weekNumberTextStyle", () => this.stylingFor("weekNumberTextStyle", {color: this.isWeekActive(weekDate) ? "#fff" : undefined, fontWeight: "bold"}), [styles?.weekNumberTextStyle, weekDate])}>
+                      {weekNumber}
+                    </Text>
+                  </Column>
+                }
                 {daysInWeek.map(({date, dayNumber, last}) =>
                   <DateColumn
                     active={this.isDateActive(date) || this.isWeekActive(weekDate)}
@@ -125,9 +135,13 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
                     key={`date-column-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
                     last={last}
                     mode={mode}
+                    rangeEnd={this.p.dateTo}
+                    rangePreviewEnd={this.s.hoverDate}
+                    rangeStart={this.p.dateFrom || this.s.selectedDate}
                     onPointerEnter={this.tt.onPointerEnterDate}
                     onPointerLeave={this.tt.onPointerLeaveDate}
                     onPress={this.tt.onDatePress}
+                    styles={styles}
                   />
                 )}
               </WeekRow>
@@ -142,14 +156,16 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
   focusDate(date) {
     const {hoverDate, selectedDate} = this.s
+    const rangeStart = this.p.dateFrom || selectedDate
+    const rangeEnd = this.p.dateTo
 
-    if (!hoverDate || !selectedDate) {
+    if (!hoverDate || !rangeStart || rangeEnd) {
       return false
     }
 
-    if (hoverDate > selectedDate && date >= selectedDate && date <= hoverDate) {
+    if (hoverDate > rangeStart && date >= rangeStart && date <= hoverDate) {
       return true
-    } else if (hoverDate < selectedDate && date <= selectedDate && date >= hoverDate) {
+    } else if (hoverDate < rangeStart && date <= rangeStart && date >= hoverDate) {
       return true
     }
 
@@ -157,8 +173,19 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   }
 
   isDateActive(date) {
-    const {defaultCurrentDate} = this.p
+    const {dateFrom, dateTo, defaultCurrentDate, mode} = this.p
     const {selectedDate} = this.s
+
+    if (mode == "dateRange") {
+      if (dateFrom && this.sameDate(dateFrom, date)) return true
+      if (dateTo && this.sameDate(dateTo, date)) return true
+      if (selectedDate && this.sameDate(selectedDate, date)) return true
+
+      return false
+    }
+
+    if (dateFrom && this.sameDate(dateFrom, date)) return true
+    if (selectedDate && this.sameDate(selectedDate, date)) return true
 
     if (!selectedDate && defaultCurrentDate && defaultCurrentDate.getFullYear() == date.getFullYear() && defaultCurrentDate.getMonth() == date.getMonth() && defaultCurrentDate.getDate() == date.getDate()) {
       return true
@@ -219,22 +246,26 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     if (this.p.mode == "date") {
       this.p.onSelect({date})
     } else if (this.p.mode == "dateRange") {
-      if (this.s.selectedDate) {
+      const rangeStart = this.p.dateFrom || this.s.selectedDate
+
+      if (rangeStart && !this.p.dateTo && rangeStart.getTime() != date.getTime()) {
         let fromDate
         let toDate
 
-        if (this.s.selectedDate < date) {
-          fromDate = this.s.selectedDate
+        if (rangeStart < date) {
+          fromDate = rangeStart
           toDate = date
         } else {
           fromDate = date
-          toDate = this.s.selectedDate
+          toDate = rangeStart
         }
 
         this.p.onSelect({fromDate, toDate})
+        if (this.p.onRangeSelect) this.p.onRangeSelect({fromDate, toDate})
         this.setState({selectedDate: null})
       } else {
         this.setState({selectedDate: date})
+        if (this.p.onRangeSelect) this.p.onRangeSelect({fromDate: date, toDate: null})
       }
     } else {
       throw new Error(`Unhandled mode: ${this.p.mode}`)
@@ -318,6 +349,24 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   firstDay = () => new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth(), 1)
   firstDayOfWeek = () => this.firstDay().getDay()
   weekNumberForDate = (date) => moment(date).isoWeek()
+
+  sameDate(firstDate, secondDate) {
+    return Boolean(
+      firstDate &&
+        secondDate &&
+        firstDate.getFullYear() == secondDate.getFullYear() &&
+        firstDate.getMonth() == secondDate.getMonth() &&
+        firstDate.getDate() == secondDate.getDate()
+    )
+  }
+
+  weekdayLabel({date, dayNumber, locale}) {
+    const {weekdayFormatter} = this.props
+
+    if (weekdayFormatter) return weekdayFormatter({date, dayNumber, locale})
+
+    return date.toLocaleString(locale, {weekday: "long"}).substring(0, 1)
+  }
 
   getWeeksInMonth = () => {
     const {currentDate} = this.s
