@@ -15,14 +15,12 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
   })
 
   setup() {
-    this.strftime = strftime
     this.useStates({
       showDatePicker: false
     })
   }
 
   render() {
-    const {strftime} = this.tt
     const {datePickerProps = {}, styles} = this.props
     const {dateFrom, dateTo} = datePickerProps
     const {onSelect, ...restDatePickerProps} = datePickerProps
@@ -30,16 +28,16 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
     const actualViewStyle = useMemo(() => {
       return Object.assign(
         {flexDirection: "row"},
-        styles.view
+        styles?.view
       )
-    }, [styles.view])
+    }, [styles?.view])
 
     const actualTextStyle = useMemo(() => {
       return Object.assign(
         {marginLeft: 8},
-        styles.text
+        styles?.text
       )
-    }, [styles.text])
+    }, [styles?.text])
 
     return (
       <>

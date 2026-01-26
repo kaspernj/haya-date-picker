@@ -56,7 +56,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
     return (
       <View
-        dataSet={{component: "haya-date-picker", class: className}}
+        dataSet={this.cache("rootViewDataSet", {component: "haya-date-picker", class: className}, [className])}
         style={this.cache("rootViewStyle", () => this.stylingFor("rootViewStyle", {
           display: "inline-block",
           backgroundColor: "#fff",
