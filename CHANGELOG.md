@@ -9,3 +9,4 @@ Changelog
 - Skipped library type checks to avoid node_modules errors in CI.
 - Added configurable system test host/port for CI environments.
 - Added date range support hooks and style overrides for the date picker.
+- Tightened date picker `mode` prop types to the supported values.

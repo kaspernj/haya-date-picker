@@ -17,7 +17,7 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
     dayNumber: PropTypes.number.isRequired,
     focus: PropTypes.bool.isRequired,
     last: PropTypes.bool.isRequired,
-    mode: PropTypes.string.isRequired,
+    mode: PropTypes.oneOf(["date", "dateRange", "week"]).isRequired,
     onPress: PropTypes.func.isRequired,
     onPointerEnter: PropTypes.func.isRequired,
     onPointerLeave: PropTypes.func.isRequired,

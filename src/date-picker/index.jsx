@@ -24,7 +24,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
     dateFrom: PropTypes.instanceOf(Date),
     dateTo: PropTypes.instanceOf(Date),
     defaultCurrentDate: PropTypes.instanceOf(Date).isRequired,
-    mode: PropTypes.string.isRequired,
+    mode: PropTypes.oneOf(["date", "dateRange", "week"]).isRequired,
     onRangeSelect: PropTypes.func,
     onSelect: PropTypes.func,
     showWeekNumbers: PropTypes.bool,

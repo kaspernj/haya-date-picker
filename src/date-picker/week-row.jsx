@@ -8,7 +8,7 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
   static propTypes = propTypesExact({
     children: PropTypes.node,
     dataSet: PropTypes.object,
-    mode: PropTypes.string.isRequired,
+    mode: PropTypes.oneOf(["date", "dateRange", "week"]).isRequired,
     onClick: PropTypes.func,
     weekActive: PropTypes.bool.isRequired,
     weekAvailable: PropTypes.bool.isRequired,
