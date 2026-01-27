@@ -6,7 +6,7 @@ import {Row} from "../table"
 
 export default memo(shapeComponent(class WeekRow extends ShapeComponent {
   static propTypes = propTypesExact({
-    children: PropTypes.node,
+    children: PropTypes.any,
     dataSet: PropTypes.object,
     mode: PropTypes.oneOf(["date", "dateRange", "week"]).isRequired,
     onClick: PropTypes.func,
@@ -65,7 +65,9 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
         onPointerLeave={this.tt.onPointerLeave}
         style={style}
         {...restProps}
-      />
+      >
+        {this.props.children}
+      </Row>
     )
   }
 
