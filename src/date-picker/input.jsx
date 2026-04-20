@@ -14,10 +14,11 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
     viewStyle: PropTypes.object
   })
 
+  state = {
+    showDatePicker: false
+  }
+
   setup() {
-    this.useStates({
-      showDatePicker: false
-    })
   }
 
   render() {

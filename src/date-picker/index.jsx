@@ -37,13 +37,14 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   weekNumberColumnDataSet = undefined
   weekNumberColumnStyle = undefined
 
+  state = {
+    currentDate: this.props.defaultCurrentDate,
+    hoverDate: null,
+    selectedDate: null
+  }
+
   setup() {
     this.locale = useLocale()
-    this.useStates({
-      currentDate: this.p.defaultCurrentDate,
-      hoverDate: null,
-      selectedDate: null
-    })
     this.weeksInMonth = useMemo(() => this.getWeeksInMonth(), [this.s.currentDate])
   }
 

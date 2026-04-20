@@ -27,10 +27,11 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
     styles: PropTypes.object
   })
 
+  state = {
+    hover: false
+  }
+
   setup() {
-    this.useStates({
-      hover: false
-    })
   }
 
   render() {

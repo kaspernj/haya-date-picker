@@ -16,8 +16,11 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
     weekNumber: PropTypes.number
   })
 
+  state = {
+    pointerOver: false
+  }
+
   setup() {
-    this.useStates({pointerOver: false})
   }
 
   render() {

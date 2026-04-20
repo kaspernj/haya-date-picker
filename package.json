@@ -10,6 +10,7 @@
   "scripts": {
     "build": "rm -rf build && tsc -p tsconfig.json || true",
     "build:example:dist": "node scripts/build-example.js",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run build",
     "release:patch": "node scripts/release-patch.js",
     "test": "node scripts/velocious-test.js",
