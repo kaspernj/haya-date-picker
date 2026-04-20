@@ -9,7 +9,16 @@ import {Pressable, Text, View} from "react-native"
 import useLocale from "../use-locale"
 import WeekRow from "./week-row"
 
-export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
+/** @typedef {"date" | "dateRange" | "week"} HayaDatePickerMode */
+/** @typedef {{[year: number]: {[week: number]: true}}} HayaDatePickerWeeksAvailable */
+/** @typedef {{dayHeaderHeadColumnStyle?: object, dayHeaderHeadColumnTextStyle?: object, headerViewStyle?: object, initialHeadColumnStyle?: object, nextButtonStyle?: object, nextTextStyle?: object, nextViewStyle?: object, previousButtonStyle?: object, previousTextStyle?: object, previousViewStyle?: object, rootViewStyle?: object, tableStyle?: object, titleTextStyle?: object, weekNumberTextStyle?: object}} HayaDatePickerStyles */
+/** @typedef {{dayNumber: number, date: Date, last: boolean}} HayaDatePickerWeekDay */
+/** @typedef {{date: Date, dayNumber: number, last: boolean}} HayaDatePickerWeekDayCell */
+/** @typedef {{weekDate: Date, daysInWeek: HayaDatePickerWeekDayCell[], weekNumber: number}} HayaDatePickerWeek */
+/** @typedef {{activeDates?: Date[], className?: string, dateFrom?: Date, dateTo?: Date, defaultCurrentDate: Date, mode: HayaDatePickerMode, onRangeSelect?: (...args: unknown[]) => unknown, onSelect?: (...args: unknown[]) => unknown, showWeekNumbers?: boolean, styles?: HayaDatePickerStyles, weekdayFormatter?: (...args: unknown[]) => string, weeksAvailable?: HayaDatePickerWeeksAvailable}} HayaDatePickerProps */
+/** @typedef {{currentDate: Date, hoverDate: Date | null, selectedDate: Date | null}} HayaDatePickerState */
+
+class HayaDatePicker extends ShapeComponent {
   static defaultProps = {
     activeDates: undefined,
     defaultCurrentDate: new Date(),
@@ -37,6 +46,7 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   weekNumberColumnDataSet = undefined
   weekNumberColumnStyle = undefined
 
+  /** @type {HayaDatePickerState} */
   state = {
     currentDate: this.props.defaultCurrentDate,
     hoverDate: null,
@@ -409,4 +419,6 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
     return weeks
   }
-}))
+}
+
+export default memo(shapeComponent(HayaDatePicker))

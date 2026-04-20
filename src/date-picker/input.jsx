@@ -6,7 +6,11 @@ import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
 import strftime from "strftime"
 
-export default memo(shapeComponent(class HayaDatePickerInput extends ShapeComponent {
+/** @typedef {{dateFrom?: Date, dateTo?: Date, onSelect: (...args: unknown[]) => unknown, [key: string]: unknown}} HayaDatePickerInputDatePickerProps */
+/** @typedef {{datePickerProps: HayaDatePickerInputDatePickerProps, styles?: {text?: object, view?: object}, textStyle?: object, viewStyle?: object}} HayaDatePickerInputProps */
+/** @typedef {{showDatePicker: boolean}} HayaDatePickerInputState */
+
+class HayaDatePickerInput extends ShapeComponent {
   static propTypes = propTypesExact({
     datePickerProps: PropTypes.object.isRequired,
     styles: PropTypes.object,
@@ -14,6 +18,7 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
     viewStyle: PropTypes.object
   })
 
+  /** @type {HayaDatePickerInputState} */
   state = {
     showDatePicker: false
   }
@@ -75,4 +80,6 @@ export default memo(shapeComponent(class HayaDatePickerInput extends ShapeCompon
   onPressed = () => {
     this.setState({showDatePicker: true})
   }
-}))
+}
+
+export default memo(shapeComponent(HayaDatePickerInput))

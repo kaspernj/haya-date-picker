@@ -5,7 +5,12 @@ import {Column} from "../table"
 import PropTypes from "prop-types"
 import propTypesExact from "prop-types-exact"
 
-export default memo(shapeComponent(class DateColumn extends ShapeComponent {
+/** @typedef {import("./index.jsx").HayaDatePickerMode} HayaDatePickerMode */
+/** @typedef {import("./index.jsx").HayaDatePickerStyles} HayaDatePickerStyles */
+/** @typedef {{active: boolean, currentDate: Date, date: Date, dayNumber: number, focus: boolean, last: boolean, mode: HayaDatePickerMode, onPress: (...args: unknown[]) => unknown, onPointerEnter: (...args: unknown[]) => unknown, onPointerLeave: (...args: unknown[]) => unknown, rangeEnd?: Date, rangePreviewEnd?: Date, rangeStart?: Date, styles?: HayaDatePickerStyles}} DateColumnProps */
+/** @typedef {{hover: boolean}} DateColumnState */
+
+class DateColumn extends ShapeComponent {
   static defaultProps = {
     styles: {}
   }
@@ -27,6 +32,7 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
     styles: PropTypes.object
   })
 
+  /** @type {DateColumnState} */
   state = {
     hover: false
   }
@@ -201,4 +207,6 @@ export default memo(shapeComponent(class DateColumn extends ShapeComponent {
         firstDate.getDate() == secondDate.getDate()
     )
   }
-}))
+}
+
+export default memo(shapeComponent(DateColumn))

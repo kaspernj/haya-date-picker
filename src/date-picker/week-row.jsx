@@ -4,7 +4,11 @@ import React, {memo, useMemo} from "react"
 import {shapeComponent, ShapeComponent} from "set-state-compare/build/shape-component"
 import {Row} from "../table"
 
-export default memo(shapeComponent(class WeekRow extends ShapeComponent {
+/** @typedef {import("./index.jsx").HayaDatePickerMode} HayaDatePickerMode */
+/** @typedef {{children?: import("react").ReactNode, dataSet?: Record<string, unknown>, mode: HayaDatePickerMode, onClick?: (...args: unknown[]) => unknown, weekActive: boolean, weekAvailable: boolean, weekDate?: Date, weekNumber?: number}} WeekRowProps */
+/** @typedef {{pointerOver: boolean}} WeekRowState */
+
+class WeekRow extends ShapeComponent {
   static propTypes = propTypesExact({
     children: PropTypes.any,
     dataSet: PropTypes.object,
@@ -16,6 +20,7 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
     weekNumber: PropTypes.number
   })
 
+  /** @type {WeekRowState} */
   state = {
     pointerOver: false
   }
@@ -82,4 +87,6 @@ export default memo(shapeComponent(class WeekRow extends ShapeComponent {
 
     this.props.onClick({e, weekDate, weekNumber})
   }
-}))
+}
+
+export default memo(shapeComponent(WeekRow))
