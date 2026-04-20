@@ -62,8 +62,16 @@ function ensureNpmLogin() {
 }
 
 /** @returns {void} */
+function checkoutLatestMaster() {
+  run("git", ["fetch", "origin", "master"])
+  run("git", ["checkout", "master"])
+  run("git", ["merge", "--ff-only", "origin/master"])
+}
+
+/** @returns {void} */
 function releasePatch() {
   ensureCleanWorktree()
+  checkoutLatestMaster()
   run("npm", ["version", "patch"])
   run("git", ["push", "origin", "HEAD"])
   run("git", ["push", "origin", "--tags"])
