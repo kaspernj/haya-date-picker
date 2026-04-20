@@ -69,7 +69,7 @@ class HayaDatePicker extends ShapeComponent {
 
   setup() {
     this.locale = useLocale()
-    this.weeksInMonth = useMemo(() => this.getWeeksInMonth(), [this.s.currentDate])
+    this.weeksInMonth = useMemo(() => this.getWeeksInMonth(), [this.state.currentDate])
   }
 
   render() {

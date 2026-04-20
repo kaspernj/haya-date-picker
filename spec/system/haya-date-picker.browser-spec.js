@@ -4,11 +4,14 @@ import waitFor from "awaitery/build/wait-for.js"
 import SystemTest from "system-testing/build/system-test.js"
 
 SystemTest.rootPath = "/?systemTest=true"
+const httpHost = process.env.SYSTEM_TEST_HTTP_HOST == "0.0.0.0"
+  ? "127.0.0.1"
+  : process.env.SYSTEM_TEST_HTTP_HOST || "localhost"
 const systemTestArgs = {
   debug: false,
   host: process.env.SYSTEM_TEST_APP_HOST || "localhost",
   port: process.env.SYSTEM_TEST_APP_PORT ? Number(process.env.SYSTEM_TEST_APP_PORT) : 8081,
-  httpHost: process.env.SYSTEM_TEST_HTTP_HOST || "localhost",
+  httpHost,
   httpPort: process.env.SYSTEM_TEST_HTTP_PORT ? Number(process.env.SYSTEM_TEST_HTTP_PORT) : 1984
 }
 let didStartSystemTest = false
