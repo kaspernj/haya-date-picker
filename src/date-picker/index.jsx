@@ -15,7 +15,21 @@ import WeekRow from "./week-row"
 /** @typedef {{dayNumber: number, date: Date, last: boolean}} HayaDatePickerWeekDay */
 /** @typedef {{date: Date, dayNumber: number, last: boolean}} HayaDatePickerWeekDayCell */
 /** @typedef {{weekDate: Date, daysInWeek: HayaDatePickerWeekDayCell[], weekNumber: number}} HayaDatePickerWeek */
-/** @typedef {{activeDates?: Date[], className?: string, dateFrom?: Date, dateTo?: Date, defaultCurrentDate: Date, mode: HayaDatePickerMode, onRangeSelect?: (...args: unknown[]) => unknown, onSelect?: (...args: unknown[]) => unknown, showWeekNumbers?: boolean, styles?: HayaDatePickerStyles, weekdayFormatter?: (...args: unknown[]) => string, weeksAvailable?: HayaDatePickerWeeksAvailable}} HayaDatePickerProps */
+/**
+ * @typedef {object} HayaDatePickerProps
+ * @property {Date[]=} activeDates
+ * @property {string=} className
+ * @property {Date=} dateFrom
+ * @property {Date=} dateTo
+ * @property {Date} defaultCurrentDate
+ * @property {HayaDatePickerMode} mode
+ * @property {(...args: unknown[]) => unknown=} onRangeSelect
+ * @property {(...args: unknown[]) => unknown=} onSelect
+ * @property {boolean=} showWeekNumbers
+ * @property {HayaDatePickerStyles=} styles
+ * @property {(...args: unknown[]) => string=} weekdayFormatter
+ * @property {HayaDatePickerWeeksAvailable=} weeksAvailable
+ */
 /** @typedef {{currentDate: Date, hoverDate: Date | null, selectedDate: Date | null}} HayaDatePickerState */
 
 class HayaDatePicker extends ShapeComponent {

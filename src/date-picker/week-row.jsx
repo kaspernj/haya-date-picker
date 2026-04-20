@@ -5,7 +5,17 @@ import {shapeComponent, ShapeComponent} from "set-state-compare/build/shape-comp
 import {Row} from "../table"
 
 /** @typedef {import("./index.jsx").HayaDatePickerMode} HayaDatePickerMode */
-/** @typedef {{children?: import("react").ReactNode, dataSet?: Record<string, unknown>, mode: HayaDatePickerMode, onClick?: (...args: unknown[]) => unknown, weekActive: boolean, weekAvailable: boolean, weekDate?: Date, weekNumber?: number}} WeekRowProps */
+/**
+ * @typedef {object} WeekRowProps
+ * @property {import("react").ReactNode=} children
+ * @property {Record<string, unknown>=} dataSet
+ * @property {HayaDatePickerMode} mode
+ * @property {(...args: unknown[]) => unknown=} onClick
+ * @property {boolean} weekActive
+ * @property {boolean} weekAvailable
+ * @property {Date=} weekDate
+ * @property {number=} weekNumber
+ */
 /** @typedef {{pointerOver: boolean}} WeekRowState */
 
 class WeekRow extends ShapeComponent {
@@ -23,9 +33,6 @@ class WeekRow extends ShapeComponent {
   /** @type {WeekRowState} */
   state = {
     pointerOver: false
-  }
-
-  setup() {
   }
 
   render() {

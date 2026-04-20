@@ -7,7 +7,13 @@ import propTypesExact from "prop-types-exact"
 import strftime from "strftime"
 
 /** @typedef {{dateFrom?: Date, dateTo?: Date, onSelect: (...args: unknown[]) => unknown, [key: string]: unknown}} HayaDatePickerInputDatePickerProps */
-/** @typedef {{datePickerProps: HayaDatePickerInputDatePickerProps, styles?: {text?: object, view?: object}, textStyle?: object, viewStyle?: object}} HayaDatePickerInputProps */
+/**
+ * @typedef {object} HayaDatePickerInputProps
+ * @property {HayaDatePickerInputDatePickerProps} datePickerProps
+ * @property {{text?: object, view?: object}=} styles
+ * @property {object=} textStyle
+ * @property {object=} viewStyle
+ */
 /** @typedef {{showDatePicker: boolean}} HayaDatePickerInputState */
 
 class HayaDatePickerInput extends ShapeComponent {
@@ -21,9 +27,6 @@ class HayaDatePickerInput extends ShapeComponent {
   /** @type {HayaDatePickerInputState} */
   state = {
     showDatePicker: false
-  }
-
-  setup() {
   }
 
   render() {

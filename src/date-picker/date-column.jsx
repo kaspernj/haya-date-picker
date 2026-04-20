@@ -7,7 +7,23 @@ import propTypesExact from "prop-types-exact"
 
 /** @typedef {import("./index.jsx").HayaDatePickerMode} HayaDatePickerMode */
 /** @typedef {import("./index.jsx").HayaDatePickerStyles} HayaDatePickerStyles */
-/** @typedef {{active: boolean, currentDate: Date, date: Date, dayNumber: number, focus: boolean, last: boolean, mode: HayaDatePickerMode, onPress: (...args: unknown[]) => unknown, onPointerEnter: (...args: unknown[]) => unknown, onPointerLeave: (...args: unknown[]) => unknown, rangeEnd?: Date, rangePreviewEnd?: Date, rangeStart?: Date, styles?: HayaDatePickerStyles}} DateColumnProps */
+/**
+ * @typedef {object} DateColumnProps
+ * @property {boolean} active
+ * @property {Date} currentDate
+ * @property {Date} date
+ * @property {number} dayNumber
+ * @property {boolean} focus
+ * @property {boolean} last
+ * @property {HayaDatePickerMode} mode
+ * @property {(...args: unknown[]) => unknown} onPress
+ * @property {(...args: unknown[]) => unknown} onPointerEnter
+ * @property {(...args: unknown[]) => unknown} onPointerLeave
+ * @property {Date=} rangeEnd
+ * @property {Date=} rangePreviewEnd
+ * @property {Date=} rangeStart
+ * @property {HayaDatePickerStyles=} styles
+ */
 /** @typedef {{hover: boolean}} DateColumnState */
 
 class DateColumn extends ShapeComponent {
@@ -35,9 +51,6 @@ class DateColumn extends ShapeComponent {
   /** @type {DateColumnState} */
   state = {
     hover: false
-  }
-
-  setup() {
   }
 
   render() {
