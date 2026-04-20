@@ -3,7 +3,10 @@ import {shapeComponent, ShapeComponent} from "set-state-compare/build/shape-comp
 import dataSetToAttributes from "./data-set-to-attributes.mjs"
 import {Platform, View} from "react-native"
 
-export default memo(shapeComponent(class TableRow extends ShapeComponent {
+/** @typedef {import("react").ComponentProps<typeof View> & {dataSet?: Record<string, unknown>}} TableRowProps */
+/** @typedef {Record<string, never>} TableRowState */
+
+class TableRow extends ShapeComponent {
   render() {
     const {dataSet, ...restProps} = this.props
 
@@ -13,4 +16,6 @@ export default memo(shapeComponent(class TableRow extends ShapeComponent {
 
     return <View dataSet={dataSet} {...restProps} />
   }
-}))
+}
+
+export default memo(shapeComponent(TableRow))

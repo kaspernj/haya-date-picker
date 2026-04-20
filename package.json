@@ -10,6 +10,7 @@
   "scripts": {
     "build": "rm -rf build && tsc -p tsconfig.json || true",
     "build:example:dist": "node scripts/build-example.js",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run build",
     "release:patch": "node scripts/release-patch.js",
     "test": "node scripts/velocious-test.js",
@@ -32,7 +33,7 @@
     "eventemitter3": "^5.0.1",
     "moment": "^2.30.1",
     "prop-types": "^15.8.1",
-    "set-state-compare": "^1.0.64",
+    "set-state-compare": "^1.0.84",
     "strftime": "^0.10.3",
     "ya-use-event-emitter": "^0.1.2"
   },

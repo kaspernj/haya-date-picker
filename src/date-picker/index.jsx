@@ -9,7 +9,30 @@ import {Pressable, Text, View} from "react-native"
 import useLocale from "../use-locale"
 import WeekRow from "./week-row"
 
-export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
+/** @typedef {"date" | "dateRange" | "week"} HayaDatePickerMode */
+/** @typedef {{[year: number]: {[week: number]: true}}} HayaDatePickerWeeksAvailable */
+/** @typedef {{dayHeaderHeadColumnStyle?: object, dayHeaderHeadColumnTextStyle?: object, headerViewStyle?: object, initialHeadColumnStyle?: object, nextButtonStyle?: object, nextTextStyle?: object, nextViewStyle?: object, previousButtonStyle?: object, previousTextStyle?: object, previousViewStyle?: object, rootViewStyle?: object, tableStyle?: object, titleTextStyle?: object, weekNumberTextStyle?: object}} HayaDatePickerStyles */
+/** @typedef {{dayNumber: number, date: Date, last: boolean}} HayaDatePickerWeekDay */
+/** @typedef {{date: Date, dayNumber: number, last: boolean}} HayaDatePickerWeekDayCell */
+/** @typedef {{weekDate: Date, daysInWeek: HayaDatePickerWeekDayCell[], weekNumber: number}} HayaDatePickerWeek */
+/**
+ * @typedef {object} HayaDatePickerProps
+ * @property {Date[]=} activeDates
+ * @property {string=} className
+ * @property {Date=} dateFrom
+ * @property {Date=} dateTo
+ * @property {Date} defaultCurrentDate
+ * @property {HayaDatePickerMode} mode
+ * @property {(...args: unknown[]) => unknown=} onRangeSelect
+ * @property {(...args: unknown[]) => unknown=} onSelect
+ * @property {boolean=} showWeekNumbers
+ * @property {HayaDatePickerStyles=} styles
+ * @property {(...args: unknown[]) => string=} weekdayFormatter
+ * @property {HayaDatePickerWeeksAvailable=} weeksAvailable
+ */
+/** @typedef {{currentDate: Date, hoverDate: Date | null, selectedDate: Date | null}} HayaDatePickerState */
+
+class HayaDatePicker extends ShapeComponent {
   static defaultProps = {
     activeDates: undefined,
     defaultCurrentDate: new Date(),
@@ -37,14 +60,16 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
   weekNumberColumnDataSet = undefined
   weekNumberColumnStyle = undefined
 
+  /** @type {HayaDatePickerState} */
+  state = {
+    currentDate: this.props.defaultCurrentDate,
+    hoverDate: null,
+    selectedDate: null
+  }
+
   setup() {
     this.locale = useLocale()
-    this.useStates({
-      currentDate: this.p.defaultCurrentDate,
-      hoverDate: null,
-      selectedDate: null
-    })
-    this.weeksInMonth = useMemo(() => this.getWeeksInMonth(), [this.s.currentDate])
+    this.weeksInMonth = useMemo(() => this.getWeeksInMonth(), [this.state.currentDate])
   }
 
   render() {
@@ -408,4 +433,6 @@ export default memo(shapeComponent(class HayaDatePicker extends ShapeComponent {
 
     return weeks
   }
-}))
+}
+
+export default memo(shapeComponent(HayaDatePicker))
