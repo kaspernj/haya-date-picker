@@ -13,8 +13,8 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm run build",
     "release:patch": "release-patch",
-    "test": "node scripts/velocious-test.js",
-    "test:dist": "npm run build:example:dist && SYSTEM_TEST_HOST=dist npm test",
+    "test": "npm run test:dist",
+    "test:dist": "npm run build:example:dist && SYSTEM_TEST_HOST=dist node scripts/velocious-test.js",
     "typecheck": "tsc --noEmit",
     "watch": "tsc -p tsconfig.json -w"
   },
@@ -51,7 +51,7 @@
     "release-patch": "^1.0.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^6.0.1",
-    "system-testing": "^1.0.62",
+    "system-testing": "^1.0.120",
     "typescript": "^6.0.2",
     "velocious": "^1.0.343"
   }

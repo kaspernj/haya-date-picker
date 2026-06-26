@@ -28,6 +28,8 @@ const buildExample = async () => {
       "react-native": "react-native-web"
     },
     define: {
+      "process.env.EXPO_PUBLIC_SYSTEM_TEST": '"true"',
+      "process.env.EXPO_PUBLIC_SYSTEM_TEST_HOST": "undefined",
       "process.env.NODE_ENV": '"production"'
     }
   })

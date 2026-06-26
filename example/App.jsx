@@ -28,6 +28,12 @@ const App = memo(function App() {
     if (params.get("systemTest") !== "true") return
 
     const helper = new SystemTestBrowserHelper()
+    const navigate = ({path}) => {
+      window.history.replaceState(null, "", path)
+    }
+
+    helper.getEvents().on("dismissTo", navigate)
+    helper.getEvents().on("navigate", navigate)
     helper.enableOnBrowser()
   }, [])
 
