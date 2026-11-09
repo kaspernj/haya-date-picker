@@ -1,0 +1,19 @@
+builds:
+  test:
+    dependency_roots:
+      - path: .
+    paths:
+      - src/**
+      - example/**
+      - scripts/**
+      - spec/**
+      - .github/**
+      - package.json
+      - package-lock.json
+      - spec/package.json
+      - tsconfig.json
+      - peak_flow.yml
+      - tensorbuzz.yml
+    script:
+      - npm run build
+      - SYSTEM_TEST_HTTP_HOST=0.0.0.0 npm run test:dist
